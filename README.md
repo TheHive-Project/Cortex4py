@@ -1,22 +1,22 @@
 
 ![](https://thehive-project.org/img/logo.png)
 
-# Cortex4Py
-Cortex4Py is a Python API client for [Cortex](https://thehive-project.org/), a Powerful Observable Analysis Engine.
+# Cortex4py
+Cortex4py is a Python API client for [Cortex](https://thehive-project.org/), a Powerful Observable Analysis Engine.
 
 # Caution - WIP
-Cortex4Py is a work in progress. It is considered *beta* software though we are using it on a regular basis for the use case outlined above.
+Cortex4py is a work in progress. It is considered *beta* software though we are using it on a regular basis for the use case outlined above.
 
 # Use It
 On macOS and Linux, type:
 ```
-sudo pip install cortex4py
+sudo pip install Cortex4py
 ```
 
 If you are using Python on a Windows operating system, please forgo the `sudo` command.
 
 # License
-Cortex4Py is an open source and free software released under the [AGPL](https://github.com/CERT-BDF/Cortex4Py/blob/master/LICENSE) (Affero General Public License). We, TheHive Project, are committed to ensure that Cortex4Py will remain a free and open source project on the long-run.
+Cortex4py is an open source and free software released under the [AGPL](https://github.com/CERT-BDF/Cortex4py/blob/master/LICENSE) (Affero General Public License). We, TheHive Project, are committed to ensure that Cortex4py will remain a free and open source project on the long-run.
 
 # Updates
 Information, news and updates are regularly posted on [TheHive Project Twitter account](https://twitter.com/thehive_project) and on [the blog](https://blog.thehive-project.org/).
@@ -25,7 +25,7 @@ Information, news and updates are regularly posted on [TheHive Project Twitter a
 We welcome your contributions. Please feel free to fork the code, play with it, make some patches and send us pull requests.
 
 # Support
-Please [open an issue on GitHub](https://github.com/CERT-BDF/Cortex4Py/issues/new) if you'd like to report a bug or request a feature.
+Please [open an issue on GitHub](https://github.com/CERT-BDF/Cortex4py/issues/new) if you'd like to report a bug or request a feature.
 
 If you need to contact the project team, send an email to <support@thehive-project.org>.
 
