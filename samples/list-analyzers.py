@@ -19,7 +19,7 @@ else:
 
 print('List analyzers for file observables')
 print('-----------------------------')
-response = api.get_analyzers(dataType="ip")
+response = api.get_analyzers("ip")
 if response.status_code == 200:
     print(json.dumps(response.json(), indent=4, sort_keys=True))
     print('')

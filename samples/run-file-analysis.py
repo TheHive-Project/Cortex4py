@@ -12,7 +12,7 @@ api = CortexApi('http://127.0.0.1:9000', {'http': '', 'https': ''})
 print('Run analyzer')
 print('-----------------------------')
 job_id = None
-response = api.run_analyzer("File_Info_1_0", "file", 1, "sample.txt")
+response = api.run_analyzer("File_Info_1_0", "file", 1, "./sample.txt")
 if response.status_code == 200:
     print(json.dumps(response.json(), indent=4, sort_keys=True))
     print('')
