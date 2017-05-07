@@ -108,3 +108,11 @@ class CortexApi:
             return requests.get(req, proxies=self.proxies)
         except requests.exceptions.RequestException as e:
             sys.exit("Error: {}".format(e))
+
+    def get_job_waitreport(self, job_id, atmost):
+        req = self.url + '/api/job/{0}/report?atMost={1}'.format(job_id, atmost)
+
+        try:
+            return requests.get(req, proxies=self.proxies)
+        except requests.exceptions.RequestException as e:
+            sys.exit("Error: {}".format(e))
