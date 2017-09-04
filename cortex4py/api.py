@@ -162,3 +162,24 @@ class CortexApi:
                 self.__handle_error(CortexException(response.text))
         except requests.exceptions.RequestException as e:
             self.__handle_error(e)
+
+    def delete_job(self, job_id):
+        """
+            Call the REST API that deletes the job identified by the given `job_id`
+
+            :param job_id: The job's identifier
+         
+            :type job_id: ``str``         
+
+            :return: True if the deletion completes successfully
+        """
+        req = self.url + '/api/job/{}'.format(job_id)
+        try:
+            response = requests.delete(req, proxies=self.proxies, verify=self.cert)
+
+            if response.status_code == 200:
+                return True
+            else:
+                self.__handle_error(CortexException(response.text))
+        except requests.exceptions.RequestException as e:
+            self.__handle_error(e)

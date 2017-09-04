@@ -17,7 +17,7 @@ try:
     print(json.dumps(response, indent=4, sort_keys=True))
     print('')
 except CortexException as ex:
-    print('[ERROR]: Failed to list analyzers: {}'.format(ex.message))
+    print('[ERROR]: Failed to list analyzers ({})'.format(ex.message))
     sys.exit(0)
 
 print('List analyzers for file observables')
@@ -28,6 +28,6 @@ try:
     print('{} analyzers found for ip observables'.format(len(response)))
     print(json.dumps(response, indent=4, sort_keys=True))
     print('')
-except CortexException:
-    print('ko: Failed to list analyzers for ip observables')
+except CortexException as ex:
+    print('[ERROR] Failed to list analyzers for ip observables ({})'.format(ex.message))
     sys.exit(0)

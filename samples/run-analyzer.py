@@ -26,8 +26,6 @@ print('Get Job Report')
 print('-----------------------------')
 try:
     response = api.get_job_report(job_id, '30s')
-
-    status = response["status"]
     print(json.dumps(response, indent=4, sort_keys=True))
     print('')
 except CortexException as ex:
