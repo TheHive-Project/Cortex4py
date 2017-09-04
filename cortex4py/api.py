@@ -16,7 +16,7 @@ class CortexApi:
         :param proxies: dict object defining URLs of http and https proxies
     """
 
-    def __init__(self, url, proxies):
+    def __init__(self, url, proxies, cert=True):
         """
         An client for the REST APIs defined by Cortex
 
@@ -28,6 +28,7 @@ class CortexApi:
 
         self.url = url
         self.proxies = proxies
+        self.cert = cert
 
     def get_analyzers(self, data_type=None):
         """
@@ -44,7 +45,7 @@ class CortexApi:
             req = self.url + '/api/analyzer'
 
         try:
-            return requests.get(req, proxies=self.proxies)
+            return requests.get(req, proxies=self.proxies, verify=self.cert)
         except requests.exceptions.RequestException as e:
             sys.exit("Error: {}".format(e))
 
@@ -77,7 +78,7 @@ class CortexApi:
                         "tlp": tlp
                     })
                 }
-                return requests.post(req, data=data, files=file, proxies=self.proxies)
+                return requests.post(req, data=data, files=file, proxies=self.proxies, verify=self.cert)
             else:
                 post = {
                     "data": observable,
@@ -89,7 +90,8 @@ class CortexApi:
                 return requests.post(req,
                                      headers={'Content-Type': 'application/json'},
                                      data=json.dumps(post),
-                                     proxies=self.proxies)
+                                     proxies=self.proxies,
+                                     verify=self.cert)
         except requests.exceptions.RequestException as e:
             sys.exit("Error: {}".format(e))
 
@@ -105,7 +107,7 @@ class CortexApi:
         req = self.url + '/api/job/{}/report'.format(job_id)
 
         try:
-            return requests.get(req, proxies=self.proxies)
+            return requests.get(req, proxies=self.proxies, verify=self.cert)
         except requests.exceptions.RequestException as e:
             sys.exit("Error: {}".format(e))
 
