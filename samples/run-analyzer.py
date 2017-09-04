@@ -3,37 +3,34 @@
 
 import sys
 import json
-import time
 from cortex4py.api import CortexApi
+from cortex4py.api import CortexException
 
 
-api = CortexApi('http://127.0.0.1:9000', {'http': '', 'https': ''})
+api = CortexApi('http://127.0.0.1:9000')
 
 print('Run analyzer')
 print('-----------------------------')
 job_id = None
-response = api.run_analyzer("MaxMind_GeoIP_2_0", "ip", 1, "8.8.8.8")
-if response.status_code == 200:
-    print(json.dumps(response.json(), indent=4, sort_keys=True))
+try:
+    response = api.run_analyzer("MaxMind_GeoIP_3_0", "ip", 1, "8.8.8.8")
+    print(json.dumps(response, indent=4, sort_keys=True))
     print('')
-    job_id = response.json()["id"]
-else:
-    print('ko: {}/{}'.format(response.status_code, response.text))
+    job_id = response["id"]
+except CortexException as ex:
+    print('[ERROR]: Failed to run analyzer: {}'.format(ex.message))
     sys.exit(0)
+
 
 print('Get Job Report')
 print('-----------------------------')
-status = 'InProgress'
-while status == 'InProgress':
-    response = api.get_job_report(job_id)
+try:
+    response = api.get_job_report(job_id, '30s')
 
-    if response.status_code == 200:
-        status = response.json()["status"]
-        if status == "InProgress":
-            time.sleep(1)
-        else:
-            print(json.dumps(response.json(), indent=4, sort_keys=True))
-            print('')
-    else:
-        print('ko: {}/{}'.format(response.status_code, response.text))
-        sys.exit(0)
+    status = response["status"]
+    print(json.dumps(response, indent=4, sort_keys=True))
+    print('')
+except CortexException as ex:
+    print('[ERROR]: Failed to get job report'.format(ex.message))
+    sys.exit(0)
+

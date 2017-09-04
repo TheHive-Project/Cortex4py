@@ -4,25 +4,30 @@
 import sys
 import json
 from cortex4py.api import CortexApi
+from cortex4py.api import CortexException
 
-api = CortexApi('http://127.0.0.1:9000', {'http': '', 'https': ''})
+api = CortexApi('http://127.0.0.1:9000')
 
 print('List all analyzers')
 print('-----------------------------')
-response = api.get_analyzers()
-if response.status_code == 200:
-    print(json.dumps(response.json(), indent=4, sort_keys=True))
+
+try:
+    response = api.get_analyzers()
+    print('{} analyzers found'.format(len(response)))
+    print(json.dumps(response, indent=4, sort_keys=True))
     print('')
-else:
-    print('ko: {}/{}'.format(response.status_code, response.text))
+except CortexException as ex:
+    print('[ERROR]: Failed to list analyzers: {}'.format(ex.message))
     sys.exit(0)
 
 print('List analyzers for file observables')
 print('-----------------------------')
-response = api.get_analyzers("ip")
-if response.status_code == 200:
-    print(json.dumps(response.json(), indent=4, sort_keys=True))
+
+try:
+    response = api.get_analyzers("ip")
+    print('{} analyzers found for ip observables'.format(len(response)))
+    print(json.dumps(response, indent=4, sort_keys=True))
     print('')
-else:
-    print('ko: {}/{}'.format(response.status_code, response.text))
+except CortexException:
+    print('ko: Failed to list analyzers for ip observables')
     sys.exit(0)
