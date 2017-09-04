@@ -15,10 +15,38 @@ On macOS and Linux, type:
 sudo pip install cortex4py
 ```
 
+Following is an example of a python script that runs an analysis using MaxMind analyzer
+
+```python
+import sys
+import json
+from cortex4py.api import CortexApi
+from cortex4py.api import CortexException
+
+api = CortexApi('http://127.0.0.1:9000')
+
+# Run analysis
+job_id = None
+try:
+    response = api.run_analyzer("MaxMind_GeoIP_3_0", "ip", 1, "8.8.8.8")
+    job_id = response["id"]
+except CortexException as ex:
+    print('[ERROR]: Failed to run analyzer: {}'.format(ex.message))
+    sys.exit(0)
+
+# Get the job report
+try:
+    response = api.get_job_report(job_id, '30s')
+    print(json.dumps(response, indent=4, sort_keys=True))
+except CortexException as ex:
+    print('[ERROR]: Failed to get job report'.format(ex.message))
+    sys.exit(0)
+```
+
 If you are using Python on a Windows operating system, please forgo the `sudo` command.
 
 # License
-cortex4py is an open source and free software released under the [AGPL](https://github.com/CERT-BDF/Cortex4py/blob/master/LICENSE) (Affero General Public License). We, TheHive Project, are committed to ensure that Cortex4py will remain a free and open source project on the long-run.
+Cortex4py is an open source and free software released under the [AGPL](https://github.com/CERT-BDF/Cortex4py/blob/master/LICENSE) (Affero General Public License). We, TheHive Project, are committed to ensure that Cortex4py will remain a free and open source project on the long-run.
 
 # Updates
 Information, news and updates are regularly posted on [TheHive Project Twitter account](https://twitter.com/thehive_project) and on [the blog](https://blog.thehive-project.org/).
