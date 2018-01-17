@@ -36,7 +36,7 @@ class CortexApi:
                     
         """
 
-        self.url = url
+        self.url = url.rstrip("/")
         self.proxies = proxies
         self.cert = cert
 
