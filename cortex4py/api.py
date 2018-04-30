@@ -24,7 +24,7 @@ class CortexApi:
         :param proxies: dict object defining URLs of http and https proxies
     """
 
-    def __init__(self, url, proxies={}, cert=True):
+    def __init__(self, url, proxies=None, cert=True, auth=None):
         """
         An client for the REST APIs defined by Cortex
 
@@ -33,12 +33,22 @@ class CortexApi:
             :param proxies (:obj:`dict`, optional): An object defining the http/https proxy URLs.
                 Should have two attributes: `http` or `https` indicating the proxy's URL
             :param cert (``str``, optional): True by default to enable cert verification, False to disable it
-                    
+            :param auth authentication token (required for Cortex-2), can be either a `str` for API key or a `dict`
+                with `user` and `password` for basic authentication
         """
 
         self.url = url
         self.proxies = proxies
         self.cert = cert
+        if isinstance(auth, tuple) and len(auth) == 2:
+            self.auth = auth
+            self.headers = {}
+        elif isinstance(auth, str):
+            self.auth = None
+            self.headers = {"Authorization": "Bearer %s" % auth}
+        else:
+            self.auth = None
+            self.headers = None
 
     def __handle_error(self, exception):
         if isinstance(exception, requests.exceptions.ConnectionError):
@@ -65,7 +75,7 @@ class CortexApi:
             req = self.url + '/api/analyzer'
 
         try:
-            response = requests.get(req, proxies=self.proxies, verify=self.cert)
+            response = requests.get(req, proxies=self.proxies, verify=self.cert, auth=self.auth, headers=self.headers)
 
             if response.status_code == 200:
                 return response.json()
@@ -104,7 +114,13 @@ class CortexApi:
                 })
             }
             try:
-                response = requests.post(req, data=data, files=file_def, proxies=self.proxies, verify=self.cert)
+                response = requests.post(req,
+                                         data=data,
+                                         files=file_def,
+                                         proxies=self.proxies,
+                                         verify=self.cert,
+                                         auth=self.auth,
+                                         headers=self.headers)
 
                 if response.status_code == 200:
                     return response.json()
@@ -124,11 +140,14 @@ class CortexApi:
                 }
             }
             try:
+                headers = {'Content-Type': 'application/json'}
+                headers.update(self.headers)
                 response = requests.post(req,
-                                         headers={'Content-Type': 'application/json'},
+                                         headers=headers,
                                          data=json.dumps(post),
                                          proxies=self.proxies,
-                                         verify=self.cert)
+                                         verify=self.cert,
+                                         auth=self.auth)
 
                 if response.status_code == 200:
                     return response.json()
@@ -154,7 +173,7 @@ class CortexApi:
         req = self.url + '/api/job/{}/waitreport?atMost={}'.format(job_id, timeout)
 
         try:
-            response = requests.get(req, proxies=self.proxies, verify=self.cert)
+            response = requests.get(req, proxies=self.proxies, verify=self.cert, auth=self.auth, headers=self.headers)
 
             if response.status_code == 200:
                 return response.json()
@@ -175,7 +194,11 @@ class CortexApi:
         """
         req = self.url + '/api/job/{}'.format(job_id)
         try:
-            response = requests.delete(req, proxies=self.proxies, verify=self.cert)
+            response = requests.delete(req,
+                                       proxies=self.proxies,
+                                       verify=self.cert,
+                                       auth=self.auth,
+                                       headers=self.headers)
 
             if response.status_code == 200:
                 return True
