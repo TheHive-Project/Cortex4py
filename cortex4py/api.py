@@ -51,6 +51,9 @@ class CortexApi:
             self.headers = None
 
     def __handle_error(self, exception):
+        if isinstance(exception, CortexException):
+            raise exception
+
         if isinstance(exception, requests.exceptions.ConnectionError):
             raise_from(CortexException("Cortex service is unavailable"), exception)
         elif isinstance(exception, requests.exceptions.RequestException):
@@ -95,8 +98,8 @@ class CortexApi:
 
             :type analyzer_id: ``str``
             :type data_type: ``str``
-            :type tlp: ``integer`` 
-            :type observable: ``str`` 
+            :type tlp: ``integer``
+            :type observable: ``str``
 
             :return: A JSON object describing a job
         """
@@ -163,8 +166,8 @@ class CortexApi:
             Call the REST API returning the report of a job identified by the given `job_id`
 
             :param job_id: The job's identifier
-            :param timeout: The wait duration using the format 30s, 10m, 1h 
-            
+            :param timeout: The wait duration using the format 30s, 10m, 1h
+
             :type job_id: ``str``
             :type timeout: ``str``
 
@@ -187,8 +190,8 @@ class CortexApi:
             Call the REST API that deletes the job identified by the given `job_id`
 
             :param job_id: The job's identifier
-         
-            :type job_id: ``str``         
+
+            :type job_id: ``str``
 
             :return: True if the deletion completes successfully
         """
@@ -206,3 +209,95 @@ class CortexApi:
                 self.__handle_error(CortexException(response.text))
         except requests.exceptions.RequestException as e:
             self.__handle_error(e)
+
+    def create_organization(self, name, description, status='Active'):
+        url = self.url + '/api/organization'
+        data = {
+            'name': name,
+            'description': description,
+            'status': status,
+        }
+
+        try:
+            res = requests.post(url, json=data, headers=self.headers)
+        except requests.exceptions.RequestException as e:
+            self.__handle_error(e)
+        else:
+            if res.status_code == 201:
+                return res.json()
+            self.__handle_error(CortexException(res.text))
+
+    def create_user(self, login, name, organization, roles={0: 'read', 1: 'analyze'}):
+        url = self.url + '/api/user'
+        data = {
+            'login': login,
+            'name': name,
+            'organization': organization,
+            'roles': roles
+        }
+
+        try:
+            res = requests.post(url, json=data, headers=self.headers)
+        except requests.exceptions.RequestException as e:
+            self.__handle_error(e)
+        else:
+            if res.status_code == 201:
+                return res.json()
+            self.__handle_error(CortexException(res.text))
+
+    def set_user_password(self, login, password):
+        url = self.url + '/api/user/{}/password/set'.format(login)
+        data = {'password': password}
+
+        try:
+            res = requests.post(url, json=data, headers=self.headers)
+        except requests.exceptions.RequestException as e:
+            self.__handle_error(e)
+        else:
+            if res.status_code == 204:
+                return res.json()
+            self.__handle_error(CortexException(res.text))
+
+    def renew_api_key(self, login):
+        url = self.url + '/api/user/{}/key/renew'.format(login)
+
+        try:
+            res = requests.post(url, headers=self.headers)
+        except requests.exceptions.RequestException as e:
+            self.__handle_error(e)
+        else:
+            if res.status_code == 200:
+                return res.json()
+            self.__handle_error(CortexException(res.text))
+
+    def add_analyzer(self, analyzer_name, cache_duration=None, check_tlp=True, max_tlp=2, **kwargs):
+        url = self.url + '/api/organization/analyzer/' + analyzer_name
+        data = {
+            'jobCache': cache_duration,
+            'name': analyzer_name,
+            'configuration': {
+                'check_tlp': check_tlp,
+                'max_tlp': max_tlp,
+                **kwargs
+            }
+        }
+
+        try:
+            res = requests.post(url, json=data, headers=self.headers)
+        except requests.exceptions.RequestException as e:
+            self.__handle_error(e)
+        else:
+            if res.status_code == 201:
+                return res.json()
+            self.__handle_error(res.text)
+
+    def remove_analyzer(self, uuid):
+        url = self.url + '/api/analyzer/{}'.format(uuid)
+
+        try:
+            res = requests.delete(url, headers=self.headers)
+        except requests.exceptions.RequestException as e:
+            self.__handle_error(e)
+        else:
+            if res.status_code != 204:
+                self.__handle_error(CortexException(res.text))
