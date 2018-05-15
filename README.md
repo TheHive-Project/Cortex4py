@@ -4,10 +4,7 @@
 # Cortex4py
 Cortex4py is a Python API client for [Cortex](https://thehive-project.org/), a powerful observable analysis engine where observables such as IP and email addresses, URLs, domain names, files or hashes can be analyzed one by one using a Web interface.
 
-Cortex4py allows analysts to automate these operations and submit observables in bulk mode through the Cortex REST API from alternative SIRP platforms, custom scripts or MISP.
-
-# Caution - WIP
-Cortex4py is considered work in progress. It is considered *beta* software though we are using it on a regular basis for the use case outlined above. It should be sufficient in most situations where you need to interact with [Cortex's REST API](https://github.com/CERT-BDF/CortexDocs/blob/master/api/README.md). If not, please feel free to contribute and submit pull requests or [request missing features](https://github.com/CERT-BDF/Cortex4py/issues/new) if you are not comfortable with Python.
+Cortex4py allows analysts to automate these operations and submit observables in bulk mode through the Cortex REST API from alternative SIRP platforms and custom scripts.
 
 # Use It
 On macOS and Linux, type:
@@ -15,7 +12,7 @@ On macOS and Linux, type:
 sudo pip install cortex4py
 ```
 
-Following is an example of a python script that runs an analysis using MaxMind analyzer
+Following is an example of a Python script that runs an analysis using MaxMind analyzer:
 
 ```python
 import sys
