@@ -105,6 +105,8 @@ class CortexApi:
         try:
             res = requests.get(url, auth=self.auth, headers=self.headers)
         except requests.exceptions.RequestException as e:
+            self.__handle_error(e)
+        else:
             if res.status_code == 200:
                 return res.json()
             self.__handle_error(CortexException(res.text))
