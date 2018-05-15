@@ -87,6 +87,18 @@ class CortexApi:
         except Exception as e:
             self.__handle_error(e)
 
+    def get_analyzer_configs(self):
+        url = self.url + '/api/analyzerconfig'
+
+        try:
+            res = requests.get(url, auth=self.auth, headers=self.headers)
+        except requests.exceptions.RequestException as e:
+            self.__handle_error(e)
+        else:
+            if res.status_code == 201:
+                return res.json()
+            self.__handle_error(CortexException(res.text))
+
     def run_analyzer(self, analyzer_id, data_type, tlp, observable):
         """
             Call the REST API responsible of running a given analyzer on a given observable
