@@ -210,7 +210,7 @@ class CortexApi:
         except requests.exceptions.RequestException as e:
             self.__handle_error(e)
 
-    def create_organization(self, name, description, status='Active'):
+    def create_organization(self, name, description='', status='Active'):
         url = self.url + '/api/organization'
         data = {
             'name': name,
@@ -291,8 +291,8 @@ class CortexApi:
                 return res.json()
             self.__handle_error(res.text)
 
-    def remove_analyzer(self, uuid):
-        url = self.url + '/api/analyzer/{}'.format(uuid)
+    def remove_analyzer(self, analyzer_id):
+        url = self.url + '/api/analyzer/{}'.format(analyzer_id)
 
         try:
             res = requests.delete(url, headers=self.headers)
@@ -301,3 +301,24 @@ class CortexApi:
         else:
             if res.status_code != 204:
                 self.__handle_error(CortexException(res.text))
+
+    def update_analyzer(self, analyzer_id, cache_duration=None, check_tlp=True, max_tlp=2, **kwargs):
+        url = self.url + '/api/analyzer/{}'.format(analyzer_id)
+        data = {
+            'jobCache': cache_duration,
+            'configuration': {
+                'check_tlp': check_tlp,
+                'max_tlp': max_tlp,
+                **kwargs
+            }
+        }
+
+        try:
+            res = requests.patch(url, json=data, headers=self.headers)
+        except requests.exceptions.RequestException as e:
+            self.__handle_error(e)
+        else:
+            if res.status_code == 200:
+                return res.json()
+            self.__handle_error(res.text)
+
