@@ -95,7 +95,7 @@ class CortexApi:
         except requests.exceptions.RequestException as e:
             self.__handle_error(e)
         else:
-            if res.status_code == 201:
+            if res.status_code == 200:
                 return res.json()
             self.__handle_error(CortexException(res.text))
 
