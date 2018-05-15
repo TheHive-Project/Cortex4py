@@ -267,7 +267,8 @@ class CortexApi:
             self.__handle_error(e)
         else:
             if res.status_code == 200:
-                return res.json()
+                #Cortex returns a raw string here, not a json object.
+                return res
             self.__handle_error(CortexException(res.text))
 
     def add_analyzer(self, analyzer_name, cache_duration=None, check_tlp=True, max_tlp=2, **kwargs):
