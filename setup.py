@@ -11,13 +11,13 @@ except ImportError:
 
 setup(
     name='cortex4py',
-    version='1.0.0',
+    version='2.0.0',
     description='Python API client for Cortex.',
     long_description=read_md('README.md'),
     author='TheHive-Project',
     author_email='support@thehive-project.org',
     maintainer='TheHive-Project',
-    url='https://github.com/CERT-BDF/Cortex4py',
+    url='https://github.com/Thehive-Project/Cortex4py',
     license='AGPL-V3',
     packages=['cortex4py'],
     classifiers=[

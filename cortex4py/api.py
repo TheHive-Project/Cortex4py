@@ -1,6 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+import warnings
+
+from .controller.organizations import OrganizationsController
+from .controller.users import UsersController
+from .controller.jobs import JobsController
+from .controller.analyzers import AnalyzersController
+
+
 import json
 import os
 import magic
@@ -8,13 +17,92 @@ import requests
 from future.utils import raise_from
 
 
-class InvalidInputException(Exception):
-    pass
+class Api(object):
+    """This is the main class for communicating with the Cortex API. As this is a new major version, authentication is
+    only possible through the api key. Basic auth with user/pass is deprecated."""
+    def __init__(self, url, api_key, **kwargs):
+        if not isinstance(url, str) or not isinstance(api_key, str):
+            raise TypeError('URL and API key are required and must be of type string.')
 
+        # Drop a warning for python2 because reasons
+        if int(sys.version[0]) < 3:
+            warnings.warn('You are using Python 2.x. That can work, but is not supported.')
 
-class CortexException(Exception):
-    pass
+        self.__api_key = api_key
+        self.__url = url
+        self.__base_url = '{}/api/'.format(url)
+        self.__proxies = kwargs.get('proxies', {})
+        self.__verify_cert = kwargs.get('verify_cert', kwargs.get('cert', True))
 
+        self.organizations = OrganizationsController(self)
+        self.users = UsersController(self)
+        self.jobs = JobsController(self)
+        self.analyzers = AnalyzersController(self)
+
+    def __recover(self, ex):
+        """
+        TODO catch the following exceptions
+        - requests.exceptions.RequestException
+        - requests.exceptions.RequestException
+        - requests.exceptions.RequestException
+        - requests.exceptions.RequestException
+        - requests.exceptions.RequestException
+        - requests.exceptions.RequestException
+        """
+        print("OS error: {0}".format(ex))
+        pass
+
+    def do_get(self, endpoint, params={}):
+        headers = {
+            'Authorization': 'Bearer {}'.format(self.__api_key)
+        }
+
+        try:
+            response = requests.get('{}{}'.format(self.__base_url, endpoint),
+                                    headers=headers,
+                                    params=params,
+                                    proxies=self.__proxies,
+                                    verify=self.__verify_cert)
+
+            return response.json()
+        except Exception as ex:
+            return self.__recover(ex)
+
+    def do_post(self, endpoint, data, params={}):
+        headers = {
+            'Authorization': 'Bearer {}'.format(self.__api_key),
+            'Content-Type': 'application/json'
+        }
+
+        try:
+            response = requests.post('{}{}'.format(self.__base_url, endpoint),
+                                     headers=headers,
+                                     proxies=self.__proxies,
+                                     json=data,
+                                     params=params,
+                                     verify=self.__verify_cert)
+
+            return response.json()
+        except Exception as ex:
+            return self.__recover(ex)
+
+    def do_patch(self):
+        pass
+
+    def status(self):
+        return self.do_get('status')
+
+    def get_analyzers(self, data_type=None):
+        pass
+
+    def run_analyzer(self, analyzer_id, data_type, tlp, observable):
+        pass
+
+    def get_job_report(self, job_id, timeout='Inf'):
+        pass
+
+    def delete_job(self, job_id):
+        pass
 
 class CortexApi:
     """
