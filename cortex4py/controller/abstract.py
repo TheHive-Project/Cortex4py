@@ -30,7 +30,12 @@ class AbstractController(object):
             }]
         }
 
-        return self._api.do_post(url, payload, {}).get('count', None)
+        response = self._api.do_post(url, payload, {})
+
+        if response is not None:
+            return response.get('count', None)
+        else:
+            return None
 
     def get_by_id(self, id):
         url = '{}/{}'.format(self._endpoint, id)

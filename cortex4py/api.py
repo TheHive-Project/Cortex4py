@@ -4,6 +4,7 @@
 import sys
 import warnings
 
+from .exceptions import *
 from .controller.organizations import OrganizationsController
 from .controller.users import UsersController
 from .controller.jobs import JobsController
@@ -89,6 +90,22 @@ class Api(object):
     def do_patch(self):
         pass
 
+    def do_delete(self, endpoint):
+        headers = {
+            'Authorization': 'Bearer {}'.format(self.__api_key)
+        }
+
+        try:
+            requests.delete('{}{}'.format(self.__base_url, endpoint),
+                            headers=headers,
+                            proxies=self.__proxies,
+                            verify=self.__verify_cert)
+
+            return True
+        except Exception as ex:
+            return self.__recover(ex)
+        pass
+
     def status(self):
         return self.do_get('status')
 
@@ -103,6 +120,7 @@ class Api(object):
 
     def delete_job(self, job_id):
         pass
+
 
 class CortexApi:
     """
