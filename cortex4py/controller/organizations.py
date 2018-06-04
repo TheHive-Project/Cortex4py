@@ -12,6 +12,11 @@ class OrganizationsController(AbstractController):
 
         return self._api.do_post(url, {'query': query or {}}, params)
 
+    def get_analyzers(self):
+        url = 'analyzer'
+
+        return self._api.do_get(url)
+
     def create(self, data) -> Organization:
 
         if isinstance(data, dict):

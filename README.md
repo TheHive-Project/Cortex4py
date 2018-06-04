@@ -9,6 +9,13 @@ Cortex4py allows analysts to automate these operations and submit observables in
 # Caution - WIP
 Cortex4py is considered work in progress. It is considered *beta* software though we are using it on a regular basis for the use case outlined above. It should be sufficient in most situations where you need to interact with [Cortex's REST API](https://github.com/CERT-BDF/CortexDocs/blob/master/api/README.md). If not, please feel free to contribute and submit pull requests or [request missing features](https://github.com/CERT-BDF/Cortex4py/issues/new) if you are not comfortable with Python.
 
+# Features
+This new version of Cortex4py requires a Cortex 2 server and allows the following features:
+- Manage organizations
+- Manage users
+- Configure analyzers within an organization
+- List and launch analysis
+
 # Use It
 On macOS and Linux, type:
 ```

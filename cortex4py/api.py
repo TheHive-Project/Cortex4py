@@ -40,7 +40,8 @@ class Api(object):
         self.jobs = JobsController(self)
         self.analyzers = AnalyzersController(self)
 
-    def __recover(self, ex):
+    @staticmethod
+    def __recover(ex):
         """
         TODO catch the following exceptions
         - requests.exceptions.RequestException
@@ -50,7 +51,7 @@ class Api(object):
         - requests.exceptions.RequestException
         - requests.exceptions.RequestException
         """
-        print("OS error: {0}".format(ex))
+        print("[ERROR]: {0}".format(ex))
         pass
 
     def do_get(self, endpoint, params={}):
