@@ -88,8 +88,23 @@ class Api(object):
         except Exception as ex:
             return self.__recover(ex)
 
-    def do_patch(self):
-        pass
+    def do_patch(self, endpoint, data, params={}):
+        headers = {
+            'Authorization': 'Bearer {}'.format(self.__api_key),
+            'Content-Type': 'application/json'
+        }
+
+        try:
+            response = requests.patch('{}{}'.format(self.__base_url, endpoint),
+                                      headers=headers,
+                                      proxies=self.__proxies,
+                                      json=data,
+                                      params=params,
+                                      verify=self.__verify_cert)
+
+            return response.json()
+        except Exception as ex:
+            return self.__recover(ex)
 
     def do_delete(self, endpoint):
         headers = {
