@@ -66,7 +66,7 @@ class Api(object):
                                     proxies=self.__proxies,
                                     verify=self.__verify_cert)
 
-            return response.json()
+            return response
         except Exception as ex:
             return self.__recover(ex)
 
@@ -84,7 +84,7 @@ class Api(object):
                                      params=params,
                                      verify=self.__verify_cert)
 
-            return response.json()
+            return response
         except Exception as ex:
             return self.__recover(ex)
 
@@ -102,7 +102,7 @@ class Api(object):
                                       params=params,
                                       verify=self.__verify_cert)
 
-            return response.json()
+            return response
         except Exception as ex:
             return self.__recover(ex)
 

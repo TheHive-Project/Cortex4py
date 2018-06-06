@@ -10,7 +10,7 @@ class OrganizationsController(AbstractController):
         url = 'organization/{}/user/_search'.format(organization_id)
         params = dict((k, kwargs.get(k, None)) for k in ('sort', 'range'))
 
-        return self._api.do_post(url, {'query': query or {}}, params)
+        return self._api.do_post(url, {'query': query or {}}, params).json()
 
     def get_analyzers(self):
         url = 'analyzer'
@@ -24,7 +24,7 @@ class OrganizationsController(AbstractController):
         elif isinstance(data, Organization):
             data = data.json()
 
-        response = self._api.do_post('organization', data)
+        response = self._api.do_post('organization', data).json()
 
         return Organization(response)
 
