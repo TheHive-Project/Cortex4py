@@ -126,16 +126,18 @@ class Api(object):
         return self.do_get('status')
 
     def get_analyzers(self, data_type=None):
+        # TODO Not implemented yet
         pass
 
     def run_analyzer(self, analyzer_id, data_type, tlp, observable):
+        # TODO Not implemented yet
         pass
 
-    def get_job_report(self, job_id, timeout='Inf'):
-        pass
+    def get_job_report(self, job_id, timeout='Inf'):        
+        return self.jobs.get_report_async(job_id, timeout)        
 
-    def delete_job(self, job_id):
-        pass
+    def delete_job(self, job_id):        
+        return self.jobs.delete(job_id)
 
 
 class CortexApi:
