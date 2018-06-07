@@ -1,3 +1,5 @@
+from typing import List
+
 from .abstract import AbstractController
 from ..models import User
 
@@ -5,6 +7,15 @@ from ..models import User
 class UsersController(AbstractController):
     def __init__(self, api):
         AbstractController.__init__(self, 'user', api)
+
+    def find_all(self, query, **kwargs) -> List[User]:
+        return self._wrap(self._find_all(query, **kwargs), User)
+
+    def find_one_by(self, query, **kwargs) -> User:
+        return self._wrap(self._find_one_by(query, **kwargs), User)
+
+    def get_by_id(self, org_id) -> User:
+        return self._wrap(self._get_by_id(org_id), User)
 
     def create(self, data) -> User:
 
@@ -21,10 +32,12 @@ class UsersController(AbstractController):
         # TODO Not yet implemented
         pass
 
-    def delete(self, user_id):
-        return self._api.do_patch('user/{}'.format(user_id), {
+    def lock(self, user_id) -> User:
+        user = self._api.do_patch('user/{}'.format(user_id), {
             'status': 'Locked'
         }).json()
+
+        return User(user)
 
     def set_password(self, user_id, password):
         return self._api.do_post('user/{}/password/set'.format(user_id), {'password': password}).text

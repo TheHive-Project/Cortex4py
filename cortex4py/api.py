@@ -41,7 +41,7 @@ class Api(object):
         self.analyzers = AnalyzersController(self)
 
     @staticmethod
-    def __recover(ex):
+    def __recover(exception):
         """
         TODO catch the following exceptions
         - requests.exceptions.RequestException
@@ -51,8 +51,16 @@ class Api(object):
         - requests.exceptions.RequestException
         - requests.exceptions.RequestException
         """
-        print("[ERROR]: {0}".format(ex))
-        pass
+        print("[ERROR]: {0}".format(exception))
+
+        if isinstance(exception, requests.exceptions.ConnectionError):
+            raise_from(CortexException("Cortex service is unavailable"), exception)
+        elif isinstance(exception, requests.exceptions.RequestException):
+            raise_from(CortexException("Cortex request exception"), exception)
+        elif isinstance(exception, InvalidInputException):
+            raise_from(CortexException("Invalid input exception"), exception)
+        else:
+            raise_from(CortexException("Unexpected exception"), exception)
 
     def do_get(self, endpoint, params={}):
         headers = {
@@ -68,7 +76,7 @@ class Api(object):
 
             return response
         except Exception as ex:
-            return self.__recover(ex)
+            self.__recover(ex)
 
     def do_post(self, endpoint, data, params={}):
         headers = {
@@ -86,7 +94,7 @@ class Api(object):
 
             return response
         except Exception as ex:
-            return self.__recover(ex)
+            self.__recover(ex)
 
     def do_patch(self, endpoint, data, params={}):
         headers = {
@@ -104,7 +112,7 @@ class Api(object):
 
             return response
         except Exception as ex:
-            return self.__recover(ex)
+            self.__recover(ex)
 
     def do_delete(self, endpoint):
         headers = {
@@ -119,7 +127,7 @@ class Api(object):
 
             return True
         except Exception as ex:
-            return self.__recover(ex)
+            self.__recover(ex)
         pass
 
     def status(self):

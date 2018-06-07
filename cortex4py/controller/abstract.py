@@ -3,13 +3,21 @@ class AbstractController(object):
         self._api = api
         self._endpoint = endpoint
 
-    def find_all(self, query, **kwargs):
+    def _wrap(self, data, cls):
+        if isinstance(data, dict):
+            return cls(data)
+        elif isinstance(data, list):
+            return list(map(lambda item: cls(item), data))
+        else:
+            return data
+
+    def _find_all(self, query, **kwargs):
         url = '{}/_search'.format(self._endpoint)
         params = dict((k, kwargs.get(k, None)) for k in ('sort', 'range'))
 
         return self._api.do_post(url, {'query': query or {}}, params).json()
 
-    def find_one_by(self, query, **kwargs):
+    def _find_one_by(self, query, **kwargs):
         url = '{}/_search'.format(self._endpoint)
 
         params = {
@@ -20,7 +28,7 @@ class AbstractController(object):
 
         return self._api.do_post(url, {'query': query or {}}, params).json()
 
-    def count(self, query):
+    def _count(self, query):
         url = '{}/_stats'.format(self._endpoint)
 
         payload = {
@@ -37,12 +45,12 @@ class AbstractController(object):
         else:
             return None
 
-    def get_by_id(self, id):
-        url = '{}/{}'.format(self._endpoint, id)
+    def _get_by_id(self, obj_id):
+        url = '{}/{}'.format(self._endpoint, obj_id)
 
         return self._api.do_get(url).json()
 
-    def update_one_by_id(self, id, **attributes):
+    def update_one_by_id(self, obj_id, **attributes):
         pass
 
     def update_one_by_object(self, updated_obj, limit_attributes=None):

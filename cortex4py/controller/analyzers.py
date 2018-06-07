@@ -12,8 +12,8 @@ class AnalyzersController(AbstractController):
     def disable(self, analyzer_id):
         return self._api.do_delete('analyzer/{}'.format(analyzer_id))
 
-    def get_for_type(self, datatype):
-        return self._api.do_get('analyzer/type/{}'.format(datatype)).json()
+    def get_for_type(self, data_type):
+        return self._api.do_get('analyzer/type/{}'.format(data_type)).json()
 
     def update(self, parameter_list):
         # TODO Not implemented yet
