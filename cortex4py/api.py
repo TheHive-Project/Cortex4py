@@ -78,7 +78,24 @@ class Api(object):
         except Exception as ex:
             self.__recover(ex)
 
-    def do_post(self, endpoint, data, params={}):
+    def do_file_post(self, endpoint, data, **kwargs):
+        headers = {
+            'Authorization': 'Bearer {}'.format(self.__api_key)
+        }
+
+        try:
+            response = requests.post('{}{}'.format(self.__base_url, endpoint),
+                                     headers=headers,
+                                     proxies=self.__proxies,
+                                     data=data,
+                                     verify=self.__verify_cert,
+                                     **kwargs)
+
+            return response
+        except Exception as ex:
+            self.__recover(ex)
+
+    def do_post(self, endpoint, data, params={}, **kwargs):
         headers = {
             'Authorization': 'Bearer {}'.format(self.__api_key),
             'Content-Type': 'application/json'
@@ -90,7 +107,8 @@ class Api(object):
                                      proxies=self.__proxies,
                                      json=data,
                                      params=params,
-                                     verify=self.__verify_cert)
+                                     verify=self.__verify_cert,
+                                     **kwargs)
 
             return response
         except Exception as ex:
@@ -133,13 +151,22 @@ class Api(object):
     def status(self):
         return self.do_get('status')
 
+    """
+    Method for backward compatibility 
+    """
     def get_analyzers(self, data_type=None):
-        # TODO Not implemented yet
-        pass
+        if data_type is not None:
+            return self.analyzers.find_all()
+        else:
+            return self.analyzers.get_by_type(data_type)
 
     def run_analyzer(self, analyzer_id, data_type, tlp, observable):
-        # TODO Not implemented yet
-        pass
+        options = {
+            'data': observable,
+            'tlp': tlp,
+            'dataType': data_type
+        }
+        return self.analyzers.run_by_name(analyzer_id, options)
 
     def get_job_report(self, job_id, timeout='Inf'):        
         return self.jobs.get_report_async(job_id, timeout)        

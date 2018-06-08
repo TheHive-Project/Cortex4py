@@ -23,7 +23,7 @@ class JobsController(AbstractController):
         return self._wrap(self._api.do_get('job/{}/waitreport?atMost={}'.format(job_id, timeout)).json(), Job)
 
     def get_artifacts(self, job_id) -> List[JobArtifact]:
-        return self._api.do_get('job/{}/artifacts'.format(job_id)).json()
+        return self._wrap(self._api.do_get('job/{}/artifacts'.format(job_id)).json(), JobArtifact)
 
     def delete(self, job_id) -> bool:
         return self._api.do_delete('job/{}'.format(job_id))
