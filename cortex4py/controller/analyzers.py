@@ -30,7 +30,7 @@ class AnalyzersController(AbstractController):
         return self._wrap(self._api.do_get('analyzer/type/{}'.format(data_type)).json(), Analyzer)
 
     def definitions(self):
-        return self._wrap
+        return self._wrap(self._api.do_get('analyzerdefinition'), )
 
     def enable(self, analyzer_name, config):
         # TODO Not implemented yet

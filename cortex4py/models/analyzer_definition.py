@@ -1,7 +1,7 @@
 from .model import Model
 
 
-class Analyzer(Model):
+class AnalyzerDefinition(Model):
 
     def __init__(self, data):
         defaults = {
@@ -13,8 +13,9 @@ class Analyzer(Model):
             'author': None,
             'url': None,
             'license': None,
+            'basicConfig': None,
             'dataTypeList': [],
-            'configuration': {}
+            'configurationItems': []
         }
 
         if data is None:
