@@ -16,38 +16,49 @@ This new version of Cortex4py requires a Cortex 2 server and allows the followin
 - Configure analyzers within an organization
 - List and launch analysis
 
+For more details, please refer to the [full documentation](Usage.md)
+
+**Note that Cortex4py 2.0.0+ requires Python 3, and doesn't support Python 2**
+
 # Use It
 On macOS and Linux, type:
 ```
 sudo pip install cortex4py
 ```
 
+or, if you already have it, update it
+
+```
+sudo pip install -U cortex4py
+```
+
 Following is an example of a python script that runs an analysis using MaxMind analyzer
 
 ```python
-import sys
 import json
-from cortex4py.api import CortexApi
+from cortex4py.api import Api
 from cortex4py.api import CortexException
 
-api = CortexApi('http://127.0.0.1:9000')
+# ORG ADMIN operations
+api = Api('http://CORTEX_URL:9001', '**API_KEY**')
 
-# Run analysis
-job_id = None
 try:
-    response = api.run_analyzer("MaxMind_GeoIP_3_0", "ip", 1, "8.8.8.8")
-    job_id = response["id"]
+    job = api.analyzers.run_by_name('ANALYZER_1_0', {
+        'data': 'google.com',
+        'dataType': 'domain',
+        'tlp': 1,
+        'message': 'custom message sent to analyzer',
+        'parameters': {
+            'key1': 'value1',
+            'key2': True,
+            'key3': 10
+        }
+    }, force=1)
+    
+    print('Job with ID={} has been started successfully'.format(job.id))
+    print('Job details:'.format(json.dumps(job.json(), indent=2)))
 except CortexException as ex:
     print('[ERROR]: Failed to run analyzer: {}'.format(ex.message))
-    sys.exit(0)
-
-# Get the job report
-try:
-    response = api.get_job_report(job_id, '30s')
-    print(json.dumps(response, indent=4, sort_keys=True))
-except CortexException as ex:
-    print('[ERROR]: Failed to get job report'.format(ex.message))
-    sys.exit(0)
 ```
 
 If you are using Python on a Windows operating system, please forgo the `sudo` command.
