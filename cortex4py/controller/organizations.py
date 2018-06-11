@@ -1,5 +1,6 @@
 from typing import List
 
+import json
 from .abstract import AbstractController
 from ..models import Organization, Analyzer
 
@@ -42,15 +43,20 @@ class OrganizationsController(AbstractController):
 
         return Organization(response)
 
-    def update(self, org_id, data) -> Organization:
-        """
-        TODO: Not yet implemented
+    def update(self, org_id, data, fields=None) -> Organization:
 
-        curl -XPATCH -H 'Authorization: Bearer **API_KEY**' -H 'Content-Type: application/json' 'http://CORTEX_APP_URL:9001/api/organization/ORG_ID' -d '{
-          "description": "New Demo organization",
-        }'
-        """
-        pass
+        if isinstance(data, Organization):
+            data = data.json()
+
+        changes = dict((k, data.get(k, None)) for k in ('description', 'status'))
+
+        if fields is not None:
+            patch = dict((k, changes.get(k, None)) for k in fields)
+        else:
+            patch = changes
+
+        url = 'organization/{}'.format(org_id)
+        return self._wrap(self._api.do_patch(url, patch).json(), Organization)
 
     def delete(self, org_id) -> bool:
         return self._api.do_delete('organization/{}'.format(org_id))
