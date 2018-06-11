@@ -42,23 +42,20 @@ class Api(object):
 
     @staticmethod
     def __recover(exception):
-        """
-        TODO catch the following exceptions
-        - requests.exceptions.RequestException
-        - requests.exceptions.RequestException
-        - requests.exceptions.RequestException
-        - requests.exceptions.RequestException
-        - requests.exceptions.RequestException
-        - requests.exceptions.RequestException
-        """
         print("[ERROR]: {0}".format(exception))
-
-        if isinstance(exception, requests.exceptions.ConnectionError):
+        if isinstance(exception, requests.exceptions.HTTPError):
+            if exception.response.status_code == 404:
+                raise_from(CortexException("Resource not found"), exception)
+            elif exception.response.status_code == 401:
+                raise_from(CortexException("Authentication error"), exception)
+            elif exception.response.status_code == 403:
+                raise_from(CortexException("Authorization error"), exception)
+            else:
+                raise_from(CortexException("Invalid input exception"), exception)
+        elif isinstance(exception, requests.exceptions.ConnectionError):
             raise_from(CortexException("Cortex service is unavailable"), exception)
         elif isinstance(exception, requests.exceptions.RequestException):
             raise_from(CortexException("Cortex request exception"), exception)
-        elif isinstance(exception, InvalidInputException):
-            raise_from(CortexException("Invalid input exception"), exception)
         else:
             raise_from(CortexException("Unexpected exception"), exception)
 
@@ -74,6 +71,7 @@ class Api(object):
                                     proxies=self.__proxies,
                                     verify=self.__verify_cert)
 
+            response.raise_for_status()
             return response
         except Exception as ex:
             self.__recover(ex)
@@ -90,7 +88,7 @@ class Api(object):
                                      data=data,
                                      verify=self.__verify_cert,
                                      **kwargs)
-
+            response.raise_for_status()
             return response
         except Exception as ex:
             self.__recover(ex)
@@ -109,7 +107,7 @@ class Api(object):
                                      params=params,
                                      verify=self.__verify_cert,
                                      **kwargs)
-
+            response.raise_for_status()
             return response
         except Exception as ex:
             self.__recover(ex)
@@ -127,7 +125,7 @@ class Api(object):
                                       json=data,
                                       params=params,
                                       verify=self.__verify_cert)
-
+            response.raise_for_status()
             return response
         except Exception as ex:
             self.__recover(ex)
@@ -138,11 +136,11 @@ class Api(object):
         }
 
         try:
-            requests.delete('{}{}'.format(self.__base_url, endpoint),
-                            headers=headers,
-                            proxies=self.__proxies,
-                            verify=self.__verify_cert)
-
+            response = requests.delete('{}{}'.format(self.__base_url, endpoint),
+                                       headers=headers,
+                                       proxies=self.__proxies,
+                                       verify=self.__verify_cert)
+            response.raise_for_status()
             return True
         except Exception as ex:
             self.__recover(ex)

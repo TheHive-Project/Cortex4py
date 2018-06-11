@@ -1,5 +1,4 @@
 import os
-from textwrap import indent
 
 import magic
 import json
@@ -7,7 +6,7 @@ from typing import List
 
 from cortex4py.query import *
 from .abstract import AbstractController
-from ..models import Analyzer, Job
+from ..models import Analyzer, Job, AnalyzerDefinition
 
 
 class AnalyzersController(AbstractController):
@@ -30,18 +29,22 @@ class AnalyzersController(AbstractController):
         return self._wrap(self._api.do_get('analyzer/type/{}'.format(data_type)).json(), Analyzer)
 
     def definitions(self):
-        return self._wrap(self._api.do_get('analyzerdefinition'), )
+        return self._wrap(self._api.do_get('analyzerdefinition'), AnalyzerDefinition)
 
-    def enable(self, analyzer_name, config):
-        # TODO Not implemented yet
-        pass
+    def enable(self, analyzer_name, config) -> Analyzer:
+        url = 'organization/analyzer/{}'.format(analyzer_name)
+        config['name'] = analyzer_name
+
+        return self._wrap(self._api.do_post(url, config).json(), Analyzer)
+
+    def update(self, analyzer_id, config) -> Analyzer:
+        url = 'analyzer/{}'.format(analyzer_id)
+        config.pop('key', None)
+
+        return self._wrap(self._api.do_patch(url, config).json(), Analyzer)
 
     def disable(self, analyzer_id):
         return self._api.do_delete('analyzer/{}'.format(analyzer_id))
-
-    def update(self, parameter_list):
-        # TODO Not implemented yet
-        pass
 
     def run_by_id(self, analyzer_id, observable, **kwargs):
         tlp = observable.get('tlp', 2)

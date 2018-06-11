@@ -14,7 +14,10 @@ class Analyzer(Model):
             'url': None,
             'license': None,
             'dataTypeList': [],
-            'configuration': {}
+            'configuration': {},
+            'rate': None,
+            'rateUnit': None,
+            'jobCache': None
         }
 
         if data is None:
