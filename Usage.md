@@ -6,6 +6,7 @@ Cortex4py 2.0.0+ required Python 3.
 ## Table of Contents
 
 * [Introduction](#introduction)
+  * [Library architecture](#library-architecture)
   * [Migration](#migration)
   * [Proxy and certificate verification](#proxy-and-certificate-verification)
   * [Backward compatibility](#backward-compatibility)
@@ -15,14 +16,54 @@ Cortex4py 2.0.0+ required Python 3.
   * [Methods](#methods-1)
   * [Examples](#examples-1)
 * [User operations](#user-operations)
+  * [Model](#model-2)
+  * [Methods](#methods-2)
+  * [Examples](#examples-2)
 * [Analyzer operations](#analyzer-operations)
+  * [Model](#model-3)
+  * [Methods](#methods-3)
+  * [Examples](#examples-3)
 * [Job operations](#job-operations)
+  * [Model](#model-4)
+  * [Methods](#methods-4)
+  * [Examples](#examples-4)
 
 ## Introduction
 
 Cortex4py 2.0.0+ is a new version of the library, that is only compatible with Cortex V2.
 
 It introduces support authentication and covers almost all the available APIs, including administration APIs.
+
+### Library architecture
+
+Cortex4py 2.0.0+ is defined the following structure:
+
+```plain
+├── cortex4py
+│   ├── api
+│   ├── controller
+│   │   ├── abstract
+│   │   ├── analyzers
+│   │   ├── jobs
+│   │   ├── organizations
+│   │   └── users
+│   ├── exceptions
+│   ├── models
+│   │   ├── analyzer
+│   │   ├── analyzer_definition
+│   │   ├── job
+│   │   ├── job_artifact
+│   │   ├── model
+│   │   ├── organization
+│   │   └── user
+│   └── query
+```
+
+- **model** classes represent the data objsects, extend the `cortex4py.models.Model` that provide a `json()` methods returning a JSON `dict` from every model object.
+- **controller** classes wrap the available methods that call Cortex APIs.
+- **api** class is the main class giving access to the different controllers
+- **query.*** are utility methods that allows building search queries
+- **exceptions.*** are supported exceptions
 
 ### Migration
 
@@ -129,13 +170,16 @@ An organization is represented by the following model class:
 
 ### Examples
 
-The following example shows how to manipulate organization as a `superadmin` user
+The following example shows how to manipulate organizations as a `superadmin` user
 
 ```python
 from cortex4py.api import Api
 from cortex4py.query import *
 
 api = Api('http://CORTEX_APP_URL:9001', '**API_KEY**')
+
+# Find how many locked organizations exist
+count = api.organizations.count(Eq('status', 'Locked'))
 
 # Fetch the last 10 created organizations
 locked_orgs = api.organizations.find_all({}, range='0-10', sort='-createdAt')
@@ -146,7 +190,7 @@ for org in locked_orgs:
 
 # Create a new organization
 new_org = api.organizations.create(Organization({
-    "name": "Demo org",
+    "name": "demo",
     "description": "This is a demo organization",
     "status": "Active"
 }))
@@ -160,4 +204,32 @@ api.organizations.update(new_org.id, new_org, ['description'])
 
 # Delete the newly created org
 api.organizations.delete(new_org.id)
+```
+
+The following example shows how to manipulate organizations as a `orgadmin` user
+
+```python
+import json
+
+from cortex4py.api import Api
+from cortex4py.query import *
+
+api = Api('http://CORTEX_APP_URL:9001', '**API_KEY**')
+
+# Get details of an organization
+org = api.organizations.get_by_id('demo')
+
+# Print the json representation of the Organization object
+print(json.dumps(org.json(), indent=2))
+
+# Fetch the last 5 created and active users
+users = api.organizations.get_users(org.id, Eq('status', 'Active'), range='0-5', sort='-createdAt')
+
+# Display the usernames
+for user in users:
+  print('User {} has roles {}'.format(user.name, user.roles))
+
+# Fetch the organization analyzers
+for a in api.organizations.get_analyzers():
+  print(a.name)
 ```
