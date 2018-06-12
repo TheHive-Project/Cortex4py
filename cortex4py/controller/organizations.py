@@ -1,8 +1,7 @@
 from typing import List
 
-import json
 from .abstract import AbstractController
-from ..models import Organization, Analyzer
+from ..models import Organization, Analyzer, User
 
 
 class OrganizationsController(AbstractController):
@@ -22,7 +21,7 @@ class OrganizationsController(AbstractController):
         url = 'organization/{}/user/_search'.format(organization_id)
         params = dict((k, kwargs.get(k, None)) for k in ('sort', 'range'))
 
-        return self._api.do_post(url, {'query': query or {}}, params).json()
+        return self._wrap(self._api.do_post(url, {'query': query or {}}, params).json(), User)
 
     def count(self, query) -> int:
         return self._count(query)
