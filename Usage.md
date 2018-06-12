@@ -4,21 +4,20 @@ This document aims to provide the details of how to use Cortex4py library to wri
 Cortex4py 2.0.0+ required Python 3.
 
 ## Table of Contents
-  * [Introduction](#introduction)
-    * [Migration](#migration)
-    * [Proxy and certificate verification](#proxy-and-certificate-verification)
-    * [Backward compatibility](#backward-compatibility)
-    * [Exception handling](#exception-handling)       
-  * [Organization operations](#organization-operations)
-    * [Model](#model-1)
-    * [Methods](#methods-1)
-    * [Examples](#examples-1)
-    
-  * [User operations](#user-operations)
-  * [Analyzer operations](#analyzer-operations)
-  * [Job operations](#job-operations)
-    
-    
+
+* [Introduction](#introduction)
+  * [Migration](#migration)
+  * [Proxy and certificate verification](#proxy-and-certificate-verification)
+  * [Backward compatibility](#backward-compatibility)
+  * [Exception handling](#exception-handling)
+* [Organization operations](#organization-operations)
+  * [Model](#model-1)
+  * [Methods](#methods-1)
+  * [Examples](#examples-1)
+* [User operations](#user-operations)
+* [Analyzer operations](#analyzer-operations)
+* [Job operations](#job-operations)
+
 ## Introduction
 
 Cortex4py 2.0.0+ is a new version of the library, that is only compatible with Cortex V2.
@@ -93,12 +92,28 @@ All the libraries operations generates a `cortex4py.exceptions.CortexException` 
 | `Invalid input exception` | A 400 error occurred |
 | `Cortex service is unavailable` | Connection issue, Cortex is not available |
 | `Cortex request exception` | A 500 error occurred |
-| `Unexpected exception` | An unhandled error occurred | 
-
+| `Unexpected exception` | An unhandled error occurred |
 
 ## Organization operations
 
-The `OrganizationController` class provides a set of methods to handle organizations:
+The `OrganizationController` class provides a set of methods to handle organizations.
+
+### Model
+
+An organization is represented by the following model class:
+
+| Field | Description | Type |
+| --------- | ----------- | ---- |
+|`id`| Organization's identifier | readonly |
+|`name`| Organization's name, can be specified during creation only. | readonly |
+|`description`| Organization's description | writable |
+|`status`| Organization's status, `Active` or `Locked`| writable |
+|`createdAt` | Creation date | computed |
+|`createdBy` | User who created the org | computed |
+|`updatedAt` | Last update | computed |
+|`updatedBy` | User who last updated the org | computed |
+
+### Methods
 
 | Method | Description | Return type |
 | --------- | ----------- | ---- |
@@ -112,3 +127,37 @@ The `OrganizationController` class provides a set of methods to handle organizat
 |`update(org_id,data,fields)` | Requires `superadmin` role, returns the updated `Organization` object. `data` can be a JSON or `Organization` object. `fields` parameter is an array of field names to update | Organization |
 |`delete(org_id)` | Requires `superadmin` role, returns `true` if the delete completes successfully | Boolean |
 
+### Examples
+
+The following example shows how to manipulate organization as a `superadmin` user
+
+```python
+from cortex4py.api import Api
+from cortex4py.query import *
+
+api = Api('http://CORTEX_APP_URL:9001', '**API_KEY**')
+
+# Fetch the last 10 created organizations
+locked_orgs = api.organizations.find_all({}, range='0-10', sort='-createdAt')
+
+# Display the name of the locked organizations
+for org in locked_orgs:
+  print('Organization {} is {}'.format(org.name, org.status))
+
+# Create a new organization
+new_org = api.organizations.create(Organization({
+    "name": "Demo org",
+    "description": "This is a demo organization",
+    "status": "Active"
+}))
+
+# Display its id
+print(new_org.id)
+
+# Update the newly created org
+new_org.descrirption = 'This is an disabled organization'
+api.organizations.update(new_org.id, new_org, ['description'])
+
+# Delete the newly created org
+api.organizations.delete(new_org.id)
+```
