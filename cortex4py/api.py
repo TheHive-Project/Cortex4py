@@ -147,12 +147,20 @@ class Api(object):
     Method for backward compatibility 
     """
     def get_analyzers(self, data_type=None):
+        warnings.warn(
+            'api.get_analyzers is considered deprecated. Use the analyzers controller instead.',
+            DeprecationWarning
+        )
         if data_type is not None:
             return self.analyzers.find_all()
         else:
             return self.analyzers.get_by_type(data_type)
 
     def run_analyzer(self, analyzer_id, data_type, tlp, observable):
+        warnings.warn(
+            'api.run_analyzer is considered deprecated. Use the analyzers controller instead.',
+            DeprecationWarning
+        )
         options = {
             'data': observable,
             'tlp': tlp,
@@ -160,9 +168,17 @@ class Api(object):
         }
         return self.analyzers.run_by_name(analyzer_id, options)
 
-    def get_job_report(self, job_id, timeout='Inf'):        
+    def get_job_report(self, job_id, timeout='Inf'):
+        warnings.warn(
+            'api.get_job_report is considered deprecated. Use the jobs controller instead.',
+            DeprecationWarning
+        )
         return self.jobs.get_report_async(job_id, timeout)        
 
-    def delete_job(self, job_id):        
+    def delete_job(self, job_id):
+        warnings.warn(
+            'api.delete_job is considered deprecated. Use the jobs controller instead.',
+            DeprecationWarning
+        )
         return self.jobs.delete(job_id)
 
