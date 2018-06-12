@@ -1,4 +1,5 @@
 # How to use Cortex4py
+
 This document aims to provide the details of how to use Cortex4py library to write custom scripts handling Cortex 2 apis.
 
 Cortex4py 2.0.0+ required Python 3.
@@ -32,11 +33,11 @@ Cortex4py 2.0.0+ required Python 3.
 
 Cortex4py 2.0.0+ is a new version of the library, that is only compatible with Cortex V2.
 
-It introduces support authentication and covers almost all the available APIs, including administration APIs.
+It introduces support for authentication and covers almost all the available APIs, including administration APIs.
 
 ### Library architecture
 
-Cortex4py 2.0.0+ is defined the following structure:
+Cortex4py 2.0.0+ is defined as the following structure:
 
 ```plain
 ├── cortex4py
@@ -119,7 +120,7 @@ job_with_report = api.get_job_report('XXXXXX', timeout='Inf')
 job_deleted = api.delete_job('XXXXXX')
 ```
 
-These methods are now deprecated.
+**Note**: These methods are now deprecated.
 
 ### Exception handling
 
@@ -199,8 +200,9 @@ new_org = api.organizations.create(Organization({
 print(new_org.id)
 
 # Update the newly created org
-new_org.descrirption = 'This is an disabled organization'
-api.organizations.update(new_org.id, new_org, ['description'])
+new_org = api.organizations.update(new_org.id, {
+  'description': 'This is an disabled organization'
+})
 
 # Delete the newly created org
 api.organizations.delete(new_org.id)
@@ -233,3 +235,46 @@ for user in users:
 for a in api.organizations.get_analyzers():
   print(a.name)
 ```
+
+## User operations
+
+The `UserController` class provides a set of methods to handle users.
+
+### Model
+
+A user is represented by the following model class:
+
+| Field | Description | Type |
+| --------- | ----------- | ---- |
+|`id`| Users's identifier | readonly |
+|`login`| User's login, can be specified during creation only. | readonly |
+|`name`| User's full name | writable |
+|`organization`| Users's organization. Can be specified during the creation of the user, or updated only by `superadmin` users | writable |
+|`status`| User's status, `Active` or `Locked`| writable |
+|`createdAt` | Creation date | computed |
+|`createdBy` | User who created the org | computed |
+|`updatedAt` | Last update | computed |
+|`updatedBy` | User who last updated the org | computed |
+|`hasKey` | true when the user has an API key | computed |
+|`hasPassword` | true if the user has a password | computed |
+
+### Methods
+
+| Method | Description | Return type |
+| --------- | ----------- | ---- |
+|`find_all(query,**kwargs)` | Returns a list of `User` objects, based on `query`, `range` and `sort` parameters | List[User] |
+|`find_one_by(query,**kwargs)` | Returns the first `User` object, based on `query` and `sort` parameters | User |
+|`get_by_id(user_id)` | Returns a `User` by its `user_id` | Organization |
+|`create(data)` | Returns the create `User` object. `data` could be a JSON or `User` objects | User |
+|`update(user_id,data,fields)` | Returns the updated `User` object. `data` can be a JSON or `User` object. `fields` parameter is an array of field names to update | User |
+|`lock(user_id)` | Returns the locked user after setting its status to `Locked` | User |
+|`set_password(user_id,password)` | Returns `true` if the delete completes successfully | Boolean |
+|`change_password(user_id,current_password,new_password)` | Returns `true` if the delete completes successfully | Boolean |
+|`lock(user_id)` | TODO | Boolean |
+|`lock(user_id)` | TODO | Boolean |
+|`lock(user_id)` | TODO | Boolean |
+
+
+### Examples
+
+The following example shows how to manipulate organizations as a `superadmin` user
