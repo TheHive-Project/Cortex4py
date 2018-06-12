@@ -148,7 +148,7 @@ class Api(object):
     """
     def get_analyzers(self, data_type=None):
         warnings.warn(
-            'api.get_analyzers is considered deprecated. Use the analyzers controller instead.',
+            'api.get_analyzers() is considered deprecated. Use api.analyzers.get_by_[id|name|type]() instead.',
             DeprecationWarning
         )
         if data_type is not None:
@@ -158,7 +158,8 @@ class Api(object):
 
     def run_analyzer(self, analyzer_id, data_type, tlp, observable):
         warnings.warn(
-            'api.run_analyzer is considered deprecated. Use the analyzers controller instead.',
+            'api.run_analyzer() is considered deprecated. '
+            'Use api.analyzers.run_by_name() or api.analyzers.run_by_id() instead.',
             DeprecationWarning
         )
         options = {
@@ -170,14 +171,14 @@ class Api(object):
 
     def get_job_report(self, job_id, timeout='Inf'):
         warnings.warn(
-            'api.get_job_report is considered deprecated. Use the jobs controller instead.',
+            'api.get_job_report() is considered deprecated. Use api.jobs.get_report() instead.',
             DeprecationWarning
         )
         return self.jobs.get_report_async(job_id, timeout)        
 
     def delete_job(self, job_id):
         warnings.warn(
-            'api.delete_job is considered deprecated. Use the jobs controller instead.',
+            'api.delete_job() is considered deprecated. Use api.jobs.delete() instead.',
             DeprecationWarning
         )
         return self.jobs.delete(job_id)
