@@ -264,7 +264,7 @@ A user is represented by the following model class:
 | --------- | ----------- | ---- |
 |`find_all(query,**kwargs)` | Returns a list of `User` objects, based on `query`, `range` and `sort` parameters | List[User] |
 |`find_one_by(query,**kwargs)` | Returns the first `User` object, based on `query` and `sort` parameters | User |
-|`get_by_id(user_id)` | Returns a `User` by its `user_id` | Organization |
+|`get_by_id(user_id)` | Returns a `User` by its `user_id` | User |
 |`create(data)` | Returns the create `User` object. `data` could be a JSON or `User` objects | User |
 |`update(user_id,data,fields)` | Returns the updated `User` object. `data` can be a JSON or `User` object. `fields` parameter is an array of field names to update | User |
 |`lock(user_id)` | Returns the locked user after setting its status to `Locked` | User |
@@ -348,3 +348,26 @@ print(user.hasKey == False)
 print(user.hasPassword == True)
 print(user.status == 'Locked')
 ```
+
+## Analyzer operations
+
+The `AnalyzersController` class provides a set of methods to handle analyzers.
+
+### Model
+
+### Methods (WIP)
+
+| Method | Description | Return type |
+| --------- | ----------- | ---- |
+|`find_all(query,**kwargs)` | Returns a list of `User` objects, based on `query`, `range` and `sort` parameters | List[Analyzer] |
+|`find_one_by(query,**kwargs)` | Returns the first `User` object, based on `query` and `sort` parameters | Analyzer |
+|`get_by_id(analyzer_id)` | Returns a `Analyzer` by its `id` | Analyzer |
+|`get_by_name(name)` | Returns a `Analyzer` by its `name` | Analyzer |
+|`get_by_type(data_type)` | Returns a list of available `Analyzer` applicable to the given `data_type` | List[Analyzer] |
+|`enable(analyzer_name,config)` | Activate an analyzer and returns its `Analyzer` object | Analyzer |
+|`update(analyzer_id)` | Update the configuration of an `Analyzer` and returns the updated version | Analyzer |
+|`disable(analyzer_id)` | Removes an analyzer from an organization and returns `true` if it completes successfully | Boolean |
+|`run_by_id(analyzer_id,observable,**kwargs)` | Returns a `Job` by its `name` | Job |
+|`run_by_name(analyzer_name,observable,**kwargs)` | Runs an analyzer by its name and returns the resulting `Job` | Job |
+
+### Examples

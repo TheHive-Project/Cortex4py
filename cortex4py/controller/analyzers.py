@@ -39,14 +39,14 @@ class AnalyzersController(AbstractController):
 
     def update(self, analyzer_id, config) -> Analyzer:
         url = 'analyzer/{}'.format(analyzer_id)
-        config.pop('key', None)
+        config.pop('name', None)
 
         return self._wrap(self._api.do_patch(url, config).json(), Analyzer)
 
-    def disable(self, analyzer_id):
+    def disable(self, analyzer_id) -> bool:
         return self._api.do_delete('analyzer/{}'.format(analyzer_id))
 
-    def run_by_id(self, analyzer_id, observable, **kwargs):
+    def run_by_id(self, analyzer_id, observable, **kwargs) -> Job:
         tlp = observable.get('tlp', 2)
         data_type = observable.get('dataType', None)
 
@@ -82,17 +82,7 @@ class AnalyzersController(AbstractController):
 
             return self._wrap(self._api.do_post('analyzer/{}/run'.format(analyzer_id), post, params).json(), Job)
 
-            # try:
-            #     if response.status_code == 200:
-            #         return response.json()
-            #     elif response.status_code == 400:
-            #         self.__handle_error(InvalidInputException(response.text))
-            #     else:
-            #         self.__handle_error(CortexException(response.text))
-            # except Exception as e:
-            #     self.__handle_error(e)
-
-    def run_by_name(self, analyzer_name, observable, **kwargs):
+    def run_by_name(self, analyzer_name, observable, **kwargs) -> Job:
         analyzer = self.get_by_name(analyzer_name)
 
         return self.run_by_id(analyzer.id, observable, **kwargs)
