@@ -13,21 +13,21 @@ Cortex4py 2.0.0+ required Python 3.
   * [Backward compatibility](#backward-compatibility)
   * [Exception handling](#exception-handling)
 * [Organization operations](#organization-operations)
+  * [Model](#model)
+  * [Methods](#methods)
+  * [Examples](#examples)
+* [User operations](#user-operations)
   * [Model](#model-1)
   * [Methods](#methods-1)
   * [Examples](#examples-1)
-* [User operations](#user-operations)
+* [Analyzer operations](#analyzer-operations)
   * [Model](#model-2)
   * [Methods](#methods-2)
   * [Examples](#examples-2)
-* [Analyzer operations](#analyzer-operations)
+* [Job operations](#job-operations)
   * [Model](#model-3)
   * [Methods](#methods-3)
   * [Examples](#examples-3)
-* [Job operations](#job-operations)
-  * [Model](#model-4)
-  * [Methods](#methods-4)
-  * [Examples](#examples-4)
 
 ## Introduction
 
@@ -250,7 +250,7 @@ A user is represented by the following model class:
 |`login`| User's login, can be specified during creation only. | readonly |
 |`name`| User's full name | writable |
 |`organization`| Users's organization. Can be specified during the creation of the user, or updated only by `superadmin` users | writable |
-|`status`| User's status, `Active` or `Locked`| writable |
+|`status`| User's status, `Ok` or `Locked`| writable |
 |`createdAt` | Creation date | computed |
 |`createdBy` | User who created the org | computed |
 |`updatedAt` | Last update | computed |
@@ -268,13 +268,83 @@ A user is represented by the following model class:
 |`create(data)` | Returns the create `User` object. `data` could be a JSON or `User` objects | User |
 |`update(user_id,data,fields)` | Returns the updated `User` object. `data` can be a JSON or `User` object. `fields` parameter is an array of field names to update | User |
 |`lock(user_id)` | Returns the locked user after setting its status to `Locked` | User |
-|`set_password(user_id,password)` | Returns `true` if the delete completes successfully | Boolean |
-|`change_password(user_id,current_password,new_password)` | Returns `true` if the delete completes successfully | Boolean |
-|`lock(user_id)` | TODO | Boolean |
-|`lock(user_id)` | TODO | Boolean |
-|`lock(user_id)` | TODO | Boolean |
-
+|`set_password(user_id,password)` | Returns `true` if the update completes successfully | Boolean |
+|`change_password(user_id,current,newpass)` | Returns `true` if the update completes successfully. Needs to be called by the user itself.  | Boolean |
+|`set_key(user_id)` | Returns the created API key | String |
+|`renew_key(user_id)` | Returns the renewed API key | String |
+|`get_key(user_id)` | Returns the API key of the user identified by `user_id` | String |
+|`revoke_key(user_id)` | Returns `true` if the API key is revoked successfully | Boolean |
 
 ### Examples
 
-The following example shows how to manipulate organizations as a `superadmin` user
+The following example shows how to manipulate users:
+
+```python
+import json
+import uuid
+
+from cortex4py.api import Api
+from cortex4py.query import *
+
+api = Api('http://CORTEX_APP_URL:9001', '**API_KEY**')
+
+# List the latest 10 active users
+users = api.users.find_all(Eq('status', 'Ok'), range='0-10', sort='-createdAt')
+
+# Display the users' logins and roles
+for user in users:
+  print('User {} has roles {}'.format(user.name, user.roles))
+
+# Create a new user
+rand = str(uuid.uuid4())[:6]
+new_user = api.users.create(User({
+    'login': 'User-{}'.format(rand),
+    'name': 'User {}'.format(rand),
+    'roles': ['read', 'analyze'],
+    'status': 'Ok',
+    'organization': 'demo'
+}))
+
+# Display the created user details
+print(json.dumps(new_user.json(), indent=2))
+
+# Update the user's name and roles
+api.users.update(new_user.id, {
+  'name': 'New User',
+  'roles': ['read']
+}, ['name', 'roles'])
+
+user_id = new_user.id
+
+# Set user's password
+api.users.set_password(user_id, 'password')
+
+# Set user's API Key
+key1 = api.users.set_key(user_id)
+print(key1)
+
+# Get user's API Key
+key = api.users.get_key(user_id)
+print(key)
+
+# Renew user's API key
+key2 = api.users.renew_key(user_id)
+print(key2)
+
+# Compare keys
+print(key1 == key2)
+
+# Revoke the user's API keu
+api.users.revoke_key(user_id)
+
+# Lock the user
+api.users.lock(user_id)
+
+# Get the user details
+user = api.users.get_by_id(user_id)
+
+# check some assertions
+print(user.hasKey == False)
+print(user.hasPassword == True)
+print(user.status == 'Locked')
+```

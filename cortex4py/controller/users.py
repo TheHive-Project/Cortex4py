@@ -50,13 +50,17 @@ class UsersController(AbstractController):
         return User(user)
 
     def set_password(self, user_id, password):
-        return self._api.do_post('user/{}/password/set'.format(user_id), {'password': password}).text
+        self._api.do_post('user/{}/password/set'.format(user_id), {'password': password})
+
+        return True
 
     def change_password(self, user_id, current_password, new_password ):
-        return self._api.do_post('user/{}/password/change'.format(user_id), {
+        self._api.do_post('user/{}/password/change'.format(user_id), {
             'currentPassword': current_password,
             'password': new_password
-        }).text
+        })
+
+        return True
 
     def set_key(self, user_id):
         return self._api.do_post('user/{}/key/renew'.format(user_id), {}).text
