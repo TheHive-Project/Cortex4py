@@ -355,7 +355,9 @@ The `AnalyzersController` class provides a set of methods to handle analyzers.
 
 ### Model
 
-An analyzer is an instance of an analyzer definition, and both models share the some fields:
+An analyzer is an instance of an analyzer definition, and both models share the fields.
+
+An analyzer definition is represented by the following model class:
 
 | Field | Description | Type |
 | --------- | ----------- | ---- |
@@ -396,12 +398,12 @@ An analyzer is represented by the following model class:
 | `updatedAt` | Last update date | computed |
 | `updatedBy` | User who last updated the analyzer | computed |
 
-### Methods (WIP)
+### Methods
 
 | Method | Description | Return type |
 | --------- | ----------- | ---- |
-|`find_all(query,**kwargs)` | Returns a list of `User` objects, based on `query`, `range` and `sort` parameters | List[Analyzer] |
-|`find_one_by(query,**kwargs)` | Returns the first `User` object, based on `query` and `sort` parameters | Analyzer |
+|`find_all(query,**kwargs)` | Returns a list of `Analyzer` objects, based on `query`, `range` and `sort` parameters | List[Analyzer] |
+|`find_one_by(query,**kwargs)` | Returns the first `Analyzer` object, based on `query` and `sort` parameters | Analyzer |
 |`get_by_id(analyzer_id)` | Returns a `Analyzer` by its `id` | Analyzer |
 |`get_by_name(name)` | Returns a `Analyzer` by its `name` | Analyzer |
 |`get_by_type(data_type)` | Returns a list of available `Analyzer` applicable to the given `data_type` | List[Analyzer] |
@@ -418,7 +420,6 @@ The following example shows how to manipulate analyzers:
 
 ```python
 import json
-import uuid
 
 from cortex4py.api import Api
 from cortex4py.query import *
@@ -494,4 +495,81 @@ print(json.dumps(job2.json(), indent=2))
 
 # Disable an analyzer
 api.analyzers.disable(analyzer_id)
+```
+
+## Job operations
+
+The JobsController class provides a set of methods to handle jobs.
+
+### Model
+
+A Job is represented by the following model class:
+
+| Attribute | Description | Type |
+| --------- | ----------- | ---- |
+| `id` | Job ID | computed |
+| `analyzerDefinitionId`| Analyzer definition name | readonly |
+| `analyzerId` | Instance ID of the analyzer to which the job is associated  | readonly |
+| `organization` | Organization to which the user belongs (set upon account creation) | readonly |
+| `analyzerName` | Name of the analyzer to which the job is associated | readonly |
+| `dataType` | the datatype of the analyzed observable | readonly |
+| `status` | Status of the job (`Waiting`, `InProgress`, `Success`, `Failure`, `Deleted`) | computed |
+| `data` | Value of the analyzed observable (does not apply to `file` observables) | readonly |
+| `attachment` | JSON object representing `file` observables (does not apply to non-`file` observables). It  defines the`name`, `hashes`, `size`, `contentType` and `id` of the `file` observable | readonly |
+| `parameters` | JSON object of key/value pairs set during job creation | readonly |
+| `message` | A free text field to set additional text/context for a job | readonly |
+| `tlp` | The TLP of the analyzed observable | readonly |
+| `report` | The analysy report as a JSON object including `success`, `full`, `summary` and `artifacts` peoperties.<br>In case of failure, the resport contains a `errorMessage` property | readonly |
+| `startDate` | Start date | computed |
+| `endDate` | End date | computed |
+| `createdAt` | Creation date. Please note that a job can be requested but not immediately honored. The actual time at which it is started is the value of `startDate` | computed |
+| `createdBy` | User who created the job | computed |
+| `updatedAt` | Last update date (only Cortex updates a job when it finishes) | computed |
+| `updatedBy` | User who submitted the job and which identity is used by Cortex to update the job once it is finished | computed |
+
+A JobArtifact is represented by the following model class:
+
+| Attribute | Description | Type |
+| --------- | ----------- | ---- |
+| `id` | Artifact ID | computed |
+| `dataType` | Artifact data type | readonly |
+| `data` | Artifact value | readonly |
+| `createdAt` | Creation date. | computed |
+| `createdBy` | User who created the job that generated the artifact | computed |
+
+### Methods
+
+| Method | Description | Return type |
+| --------- | ----------- | ---- |
+|`find_all(query,**kwargs)` | Returns a list of `Job` objects, based on `query`, `range` and `sort` parameters | List[Job] |
+|`find_one_by(query,**kwargs)` | Returns the first `Job` object, based on `query` and `sort` parameters | Job |
+|`get_by_id(job_id)` | Returns a `Job` by its `id` | Job |
+|`get_report(job_id)` | Returns synchronously the `Job` object including its analysis report even if the job is still running | Job |
+|`get_report_async(job_id)` | Waits and returns the `Job` object including its analysis report | Job |
+|`get_artifacts(job_id)` | Returns a list of the obserables that have been extracted from the analysis report  | List[JobArtifact] |
+|`delete(org_id)` | Requires `superadmin` role, returns `true` if the delete completes successfully | Boolean |
+
+### Examples
+
+```python
+import json
+
+from cortex4py.api import Api
+from cortex4py.query import *
+
+api = Api('http://CORTEX_APP_URL:9001', '**API_KEY**')
+
+# Fetch the latest 10 successful jobs that have been executed agains domains
+query = And(Eq('status', 'Success'), Eq('dataType', 'domain'))
+jobs = api.jobs.find_all(query, range='0-10', sort='-createdAt')
+
+# Display summaries of the jobs above
+for job in jobs:
+  report = api.jobs.get_report(job.id).report
+  print('Job summary is {}'.format(json.dumps(report.get('summary', {}))))
+
+  print('Job {} has generated the following artifacts:'.format(job.id))
+  artifacts = api.jobs.get_artifacts(job.id)
+  for a in artifacts:
+    print('- [{}]: {}'.format(a.dataType, a.data))
 ```
