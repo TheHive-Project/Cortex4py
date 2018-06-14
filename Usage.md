@@ -355,6 +355,47 @@ The `AnalyzersController` class provides a set of methods to handle analyzers.
 
 ### Model
 
+An analyzer is an instance of an analyzer definition, and both models share the some fields:
+
+| Field | Description | Type |
+| --------- | ----------- | ---- |
+| `id` | Analyzer ID once enabled within an organization | readonly |
+| `analyzerDefinitionId`| Analyzer definition name | readonly |
+| `name` | Name of the analyzer | readonly |
+| `version` | Version of the analyzer | readonly |
+| `description` | Description of the analyzer | readonly |
+| `author` | Author of the analyzer | readonly |
+| `url` | URL where the analyzer has been published | readonly |
+| `license` | License of the analyzer | readonly |
+| `dataTypeList` | Allowed datatypes | readonly |
+| `configurationItems` | A list that describes the configuration options of the analyzer | readonly |
+| `baseConfig` | Base configuration name. This identifies the shared set of configuration with all the analyzer's flavors | readonly |
+| `createdBy` | User who enabled the analyzer | computed |
+| `updatedAt` | Last update date | computed |
+| `updatedBy` | User who last updated the analyzer | computed |
+
+An analyzer is represented by the following model class:
+
+| Field | Description | Type |
+| --------- | ----------- | ---- |
+| `id` | Analyzer ID once enabled within an organization | readonly |
+| `analyzerDefinitionId`| Analyzer definition name | readonly |
+| `name` | Name of the analyzer | readonly |
+| `version` | Version of the analyzer | readonly |
+| `description` | Description of the analyzer | readonly |
+| `author` | Author of the analyzer | readonly |
+| `url` | URL where the analyzer has been published | readonly |
+| `license` | License of the analyzer | readonly |
+| `dataTypeList` | Allowed datatypes | readonly |
+| `baseConfig` | Base configuration name. This identifies the shared set of configuration with all the analyzer's flavors | readonly |
+| `jobCache` | Report cache timeout in minutes, visible for `orgAdmin` users only | writable |
+| `rate` | Numeric amount of analyzer calls authorized for the specified `rateUnit`, visible for `orgAdmin` users only | writable |
+| `rateUnit` | Period of availability of the rate limite: `Day` or `Month`, visible for `orgAdmin` users only | writable |
+| `configuration` |  A JSON object where key/value pairs represent the config names, and their values. It includes the default properties `proxy_http`, `proxy_https`, `auto_extract_artifacts`, `check_tlp`, and `max_tlp`, visible for `orgAdmin` users only | writable |
+| `createdBy` | User who enabled the analyzer | computed |
+| `updatedAt` | Last update date | computed |
+| `updatedBy` | User who last updated the analyzer | computed |
+
 ### Methods (WIP)
 
 | Method | Description | Return type |
@@ -369,5 +410,88 @@ The `AnalyzersController` class provides a set of methods to handle analyzers.
 |`disable(analyzer_id)` | Removes an analyzer from an organization and returns `true` if it completes successfully | Boolean |
 |`run_by_id(analyzer_id,observable,**kwargs)` | Returns a `Job` by its `name` | Job |
 |`run_by_name(analyzer_name,observable,**kwargs)` | Runs an analyzer by its name and returns the resulting `Job` | Job |
+|`definitions()` | Returns the list of all the analyzer definitions including the enabled and disabled analyzers | List[AnalyzerDefinition] |
 
 ### Examples
+
+The following example shows how to manipulate analyzers:
+
+```python
+import json
+import uuid
+
+from cortex4py.api import Api
+from cortex4py.query import *
+
+api = Api('http://CORTEX_APP_URL:9001', '**API_KEY**')
+
+# Get enabled analyzers
+analyzers = api.analyzers.find_all({}, range='all')
+
+# Display enabled analyzers' names
+for analyzer in analyzers:
+  print('Analyzer {} is enabled'.format(analyzer.name))
+
+# Get enabled analyzers that can run against a domain
+domain_analyzers = api.analyzers.get_by_type('domain')
+
+# Enable the analyzer called Test_1_0
+analyzer = api.analyzers.enable('Test_1_0', {
+  "configuration": {
+    "api_key": "XXXXXXXXXXXXXx",
+    "proxy_http": "http://localhost:9999",
+    "proxy_https": "http://localhost:9999",
+    "auto_extract_artifacts": False,
+    "check_tlp": True,
+    "max_tlp": 2
+  },
+  "rate": 1000,
+  "rateUnit": "Day",
+  "jobCache": 5
+})
+
+# Print the details of the enaled analyzer
+print(json.dumps(analyzer.json(), indent=2))
+print(analyzer.analyzerDefinitionId == 'Test_1_0')
+
+# Update the configuration
+analyzer_id = analyzer.id
+analyzer = api.analyzers.update(analyzer.id, {
+  "rate": 100,
+  "rateUnit": "Day",
+  "jobCache": null,
+  "configuration": {
+    "api_key": "YYYYYYYYYYY",
+    "proxy_http": null,
+    "proxy_https": null,
+    "auto_extract_artifacts": True,
+    "check_tlp": false,
+    "max_tlp": null
+  }
+})
+
+# Run an analyzer against a domain
+job1 = api2.analyzers.run_by_name('Test_1_0', {
+    'data': 'google.com',
+    'dataType': 'domain',
+    'tlp': 1,
+    'message': 'custom message sent to analyzer',
+    'parameters': {
+        'key1': 'value1',
+        'key2': True,
+        'key3': 10
+    }
+}, force=1)
+print(json.dumps(job1.json(), indent=2))
+
+# Run an analyzer against a file
+job2 = api2.analyzers.run_by_name('File_Info_2_0', {
+    'data': '/tmp/sample.txt',
+    'dataType': 'file',
+    'tlp': 1
+}, force=1)
+print(json.dumps(job2.json(), indent=2))
+
+# Disable an analyzer
+api.analyzers.disable(analyzer_id)
+```

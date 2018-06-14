@@ -28,8 +28,8 @@ class AnalyzersController(AbstractController):
     def get_by_type(self, data_type):
         return self._wrap(self._api.do_get('analyzer/type/{}'.format(data_type)).json(), Analyzer)
 
-    def definitions(self):
-        return self._wrap(self._api.do_get('analyzerdefinition'), AnalyzerDefinition)
+    def definitions(self) -> List[AnalyzerDefinition]:
+        return self._wrap(self._api.do_get('analyzerdefinition').json(), AnalyzerDefinition)
 
     def enable(self, analyzer_name, config) -> Analyzer:
         url = 'organization/analyzer/{}'.format(analyzer_name)
