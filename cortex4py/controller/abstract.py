@@ -26,7 +26,12 @@ class AbstractController(object):
         if 'sort' in kwargs:
             params['sort'] = kwargs['sort']
 
-        return self._api.do_post(url, {'query': query or {}}, params).json()
+        collection = self._api.do_post(url, {'query': query or {}}, params).json()
+
+        if len(collection) > 0:
+            return collection[0]
+        else:
+            return None
 
     def _count(self, query):
         url = '{}/_stats'.format(self._endpoint)

@@ -23,9 +23,9 @@ class AnalyzersController(AbstractController):
         return self._wrap(self._get_by_id(analyzer_id), Analyzer)
 
     def get_by_name(self, name) -> Analyzer:
-        return self._wrap(self._find_one_by(Eq('name', name))[0], Analyzer)
+        return self._wrap(self._find_one_by(Eq('name', name)), Analyzer)
 
-    def get_by_type(self, data_type):
+    def get_by_type(self, data_type) -> List[Analyzer]:
         return self._wrap(self._api.do_get('analyzer/type/{}'.format(data_type)).json(), Analyzer)
 
     def definitions(self) -> List[AnalyzerDefinition]:
