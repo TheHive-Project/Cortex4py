@@ -124,17 +124,19 @@ job_deleted = api.delete_job('XXXXXX')
 
 ### Exception handling
 
-All the libraries operations generates a `cortex4py.exceptions.CortexException` exception, that has a specific error messages and wraps the original exception:
+All the libraries operations can raise errors that inherit a `cortex4py.exceptions.CortexException` exception class. 
 
-| Error message | Description |
-| --------- | ----------- |
-| `Resource not found` | A 404 error occurred |
-| `Authentication error` | A 401 error occurred |
-| `Authorization error` | A 403 error occurred |
-| `Invalid input exception` | A 400 error occurred |
-| `Cortex service is unavailable` | Connection issue, Cortex is not available |
-| `Cortex request exception` | A 500 error occurred |
-| `Unexpected exception` | An unhandled error occurred |
+Below is the list of the possible errors:
+
+| Error Exception | Error message | Description |
+| --------- | --------- | ----------- |
+| `cortex.exceptions.NotFoundError` | `Resource not found` | A 404 error occurred |
+| `cortex.exceptions.AuthenticationError` | `Authentication error` | A 401 error occurred |
+| `cortex.exceptions.AuthorizationError` | `Authorization error` | A 403 error occurred |
+| `cortex.exceptions.InvalidInputError` | `Invalid input exception` | A 400 error occurred |
+| `cortex.exceptions.ServiceUnavailableError` | `Cortex service is unavailable` | Connection issue, Cortex is not available |
+| `cortex.exceptions.ServerError` | `Cortex request exception` | A 500 error occurred |
+| `cortex.exceptions.CortexError` | `Unexpected exception` | An unhandled error occurred |
 
 ## Organization operations
 

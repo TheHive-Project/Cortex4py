@@ -36,22 +36,22 @@ class Api(object):
 
     @staticmethod
     def __recover(exception):
-        print("[ERROR]: {0}".format(exception))
+
         if isinstance(exception, requests.exceptions.HTTPError):
             if exception.response.status_code == 404:
-                raise CortexException("Resource not found") from exception
+                raise NotFoundError("Resource not found") from exception
             elif exception.response.status_code == 401:
-                raise CortexException("Authentication error") from exception
+                raise AuthenticationError("Authentication error") from exception
             elif exception.response.status_code == 403:
-                raise CortexException("Authorization error") from exception
+                raise AuthorizationError("Authorization error") from exception
             else:
-                raise CortexException("Invalid input exception") from exception
+                raise InvalidInputError("Invalid input exception") from exception
         elif isinstance(exception, requests.exceptions.ConnectionError):
-            raise CortexException("Cortex service is unavailable") from exception
+            raise ServiceUnavailableError("Cortex service is unavailable") from exception
         elif isinstance(exception, requests.exceptions.RequestException):
-            raise CortexException("Cortex request exception") from exception
+            raise ServerError("Cortex request exception") from exception
         else:
-            raise CortexException("Unexpected exception") from exception
+            raise CortexError("Unexpected exception") from exception
 
     def do_get(self, endpoint, params={}):
         headers = {
