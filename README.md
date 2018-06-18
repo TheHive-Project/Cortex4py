@@ -6,19 +6,17 @@ Cortex4py is a Python API client for [Cortex](https://thehive-project.org/), a p
 
 Cortex4py allows analysts to automate these operations and submit observables in bulk mode through the Cortex REST API from alternative SIRP platforms, custom scripts or MISP.
 
-# Caution - WIP
-Cortex4py is considered work in progress. It is considered *beta* software though we are using it on a regular basis for the use case outlined above. It should be sufficient in most situations where you need to interact with [Cortex's REST API](https://github.com/CERT-BDF/CortexDocs/blob/master/api/README.md). If not, please feel free to contribute and submit pull requests or [request missing features](https://github.com/CERT-BDF/Cortex4py/issues/new) if you are not comfortable with Python.
 
 # Features
-This new version of Cortex4py requires a Cortex 2 server and allows the following features:
+Cortex4py 2 is compatible with Cortex 2 and does not work with Cortex 1. It can:
 - Manage organizations
 - Manage users
 - Configure analyzers within an organization
-- List and launch analysis
+- List and launch analyzers
 
-For more details, please refer to the [full documentation](Usage.md)
+For more details, please refer to the [full documentation](Usage.md).
 
-**Note that Cortex4py 2.0.0+ requires Python 3, and doesn't support Python 2**
+**Note**: Cortex4py 2 requires Python 3. It does not support Python 2.
 
 # Use It
 On macOS and Linux, type:
@@ -26,39 +24,10 @@ On macOS and Linux, type:
 sudo pip install cortex4py
 ```
 
-or, if you already have it, update it
+or, if you already have it, update it:
 
 ```
 sudo pip install -U cortex4py
-```
-
-Following is an example of a python script that runs an analysis using MaxMind analyzer
-
-```python
-import json
-from cortex4py.api import Api
-from cortex4py.api import CortexException
-
-# ORG ADMIN operations
-api = Api('http://CORTEX_URL:9001', '**API_KEY**')
-
-try:
-    job = api.analyzers.run_by_name('ANALYZER_1_0', {
-        'data': 'google.com',
-        'dataType': 'domain',
-        'tlp': 1,
-        'message': 'custom message sent to analyzer',
-        'parameters': {
-            'key1': 'value1',
-            'key2': True,
-            'key3': 10
-        }
-    }, force=1)
-    
-    print('Job with ID={} has been started successfully'.format(job.id))
-    print('Job details:'.format(json.dumps(job.json(), indent=2)))
-except CortexException as ex:
-    print('[ERROR]: Failed to run analyzer: {}'.format(ex.message))
 ```
 
 If you are using Python on a Windows operating system, please forgo the `sudo` command.
