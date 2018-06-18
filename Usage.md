@@ -560,7 +560,7 @@ from cortex4py.query import *
 
 api = Api('http://CORTEX_APP_URL:9001', '**API_KEY**')
 
-# Fetch the latest 10 successful jobs that have been executed agains domain names
+# Fetch the last 10 successful jobs that have been executed against domain names
 query = And(Eq('status', 'Success'), Eq('dataType', 'domain'))
 jobs = api.jobs.find_all(query, range='0-10', sort='-createdAt')
 
