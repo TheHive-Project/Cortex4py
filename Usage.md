@@ -1,8 +1,8 @@
-# How to use Cortex4py
+# How to Use Cortex4py
 
-This document aims to provide the details of how to use Cortex4py library to write custom scripts handling Cortex 2 apis.
+This document is a usage guide of the Cortex4py library for writing custom scripts that interact with the [Cortex 2](https://github.com/TheHive-Project/Cortex) APIs.
 
-Cortex4py 2.0.0+ required Python 3.
+Cortex4py 2 requires Python 3. It does not work with Cortex 1.x.
 
 ## Table of Contents
 
@@ -31,13 +31,11 @@ Cortex4py 2.0.0+ required Python 3.
 
 ## Introduction
 
-Cortex4py 2.0.0+ is a new version of the library, that is only compatible with Cortex V2.
+Cortex4py 2 is a new version of the library, that is only compatible with Cortex 2.x. It supports authentication and covers almost all the [available APIs]([https://github.com/TheHive-Project/CortexDocs/blob/master/api/api-guide.md), including administration calls.
 
-It introduces support for authentication and covers almost all the available APIs, including administration APIs.
+### Library Architecture
 
-### Library architecture
-
-Cortex4py 2.0.0+ is defined as the following structure:
+Cortex4py 2 has the following structure:
 
 ```plain
 ├── cortex4py
@@ -60,19 +58,16 @@ Cortex4py 2.0.0+ is defined as the following structure:
 │   └── query
 ```
 
-- **model** classes represent the data objsects, extend the `cortex4py.models.Model` that provide a `json()` methods returning a JSON `dict` from every model object.
-- **controller** classes wrap the available methods that call Cortex APIs.
-- **api** class is the main class giving access to the different controllers
-- **query.*** are utility methods that allows building search queries
+- The **model** classes represent the data objects and extend the `cortex4py.models.Model` that provides `json()` methods returning a JSON `dict` from every model object.
+- The **controller** classes wrap the available methods that call Cortex APIs.
+- The **api** class is the main class giving access to the different controllers.
+- **query.*** are utility methods that allow building search queries.
 - **exceptions.*** are supported exceptions
 
 ### Migration
+If you have already written scripts using `cortex4py` 1.x (for Cortex 1), we tried to keep the already available methods. However, we recommend you adapt your code to leverage the new `cortex4py` 2 classes and methods as soon as feasible. Moreover, the existing scripts must be updated to support authentication if you intend to use them with Cortex 2.
 
-For developers who have already written scripts evolving `cortex4py` for Cortex v1, we tried to keep the already available methods, but we recommend using the new classes and methods.
-
-The existing scripts must be updated to  to add authentication.
-
-For Cortex v1, to instantiate an API object, developer used to write the following code:
+To instantiate a Cortex 1 API object, developers used to write the following code:
 
 ````python
 from cortex4py.api import CortexApi
@@ -80,7 +75,7 @@ from cortex4py.api import CortexApi
 api = CortexApi('http://CORTEX_APP_URL.1:9000')
 ````
 
-This code must be replaced by something like below:
+This code must be replaced with something like the example below for Cortex 2:
 
 ```python
 from cortex4py.api import Api
@@ -88,9 +83,8 @@ from cortex4py.api import Api
 api = Api('http://CORTEX_APP_URL:9001', '**API_KEY**')
 ```
 
-### Proxy and certificate verification
-
-Cortex4py 2.0.0+ allows specifying a proxy configuration the custom script requires a proxy, and an option to enable/disable certificate verification.
+### Proxy and Certificate Verification
+Cortex4py 2 allows specifying a proxy configuration should your program requires one. The library also adds an option to enable or disable certificate verification.
 
 ```python
 from cortex4py.api import Api
@@ -101,13 +95,17 @@ api = Api('http://CORTEX_APP_URL:9001', '**API_KEY**', proxies={
 }, verify_cert=False)
 ```
 
-`verify_cert` could be True/False or a string path to the certificate file
+`verify_cert` can be:
 
-**Note**: `verify_cert` replaces the `cert` argument that has been deprecated.
+- `True`
+- `False`
+- String representing the path to the certificate file.
 
-### Backward compatibility
+**Note**: `verify_cert` replaces the Cortex4py 1 `cert` argument which has been deprecated.
 
-Cortex4py 2.0.0+ implements the methods that were available within the old version of the library:
+### Backward Compatibility
+
+Cortex4py 2 implements the methods that were available in the old version of the library:
 
 ```python
 from cortex4py.api import Api
@@ -122,11 +120,11 @@ job_deleted = api.delete_job('XXXXXX')
 
 **Note**: These methods are now deprecated.
 
-### Exception handling
+### Exception Handling
 
-All the libraries operations can raise errors that inherit a `cortex4py.exceptions.CortexException` exception class. 
+All the operations supported by the library can raise errors that inherit a `cortex4py.exceptions.CortexException` exception class. 
 
-Below is the list of the possible errors:
+Possible errors are listed below:
 
 | Error Exception | Error message | Description |
 | --------- | --------- | ----------- |
@@ -134,13 +132,13 @@ Below is the list of the possible errors:
 | `cortex.exceptions.AuthenticationError` | `Authentication error` | A 401 error occurred |
 | `cortex.exceptions.AuthorizationError` | `Authorization error` | A 403 error occurred |
 | `cortex.exceptions.InvalidInputError` | `Invalid input exception` | A 400 error occurred |
-| `cortex.exceptions.ServiceUnavailableError` | `Cortex service is unavailable` | Connection issue, Cortex is not available |
+| `cortex.exceptions.ServiceUnavailableError` | `Cortex service is unavailable` | Connection issue. Cortex is not available |
 | `cortex.exceptions.ServerError` | `Cortex request exception` | A 500 error occurred |
 | `cortex.exceptions.CortexError` | `Unexpected exception` | An unhandled error occurred |
 
-## Organization operations
+## Organization Operations
 
-The `OrganizationController` class provides a set of methods to handle organizations.
+The `OrganizationController` class provides a set of methods to deal with Cortex organizations.
 
 ### Model
 
@@ -173,7 +171,7 @@ An organization is represented by the following model class:
 
 ### Examples
 
-The following example shows how to manipulate organizations as a `superadmin` user
+The following example shows how to manipulate organizations as a `superadmin` user:
 
 ```python
 from cortex4py.api import Api
@@ -210,7 +208,7 @@ new_org = api.organizations.update(new_org.id, {
 api.organizations.delete(new_org.id)
 ```
 
-The following example shows how to manipulate organizations as a `orgadmin` user
+The following example shows how to manipulate organizations as a `orgadmin` user:
 
 ```python
 import json
@@ -238,7 +236,7 @@ for a in api.organizations.get_analyzers():
   print(a.name)
 ```
 
-## User operations
+## User Operations
 
 The `UserController` class provides a set of methods to handle users.
 
@@ -351,13 +349,13 @@ print(user.hasPassword == True)
 print(user.status == 'Locked')
 ```
 
-## Analyzer operations
+## Analyzer Pperations
 
 The `AnalyzersController` class provides a set of methods to handle analyzers.
 
 ### Model
 
-An analyzer is an instance of an analyzer definition, and both models share the fields.
+An analyzer is an instance of an analyzer definition, and both models share the same fields.
 
 An analyzer definition is represented by the following model class:
 
@@ -499,13 +497,13 @@ print(json.dumps(job2.json(), indent=2))
 api.analyzers.disable(analyzer_id)
 ```
 
-## Job operations
+## Job Operations
 
-The JobsController class provides a set of methods to handle jobs.
+The `JobsController` class provides a set of methods to handle jobs. A job is the execution of a specific analyzer.
 
 ### Model
 
-A Job is represented by the following model class:
+A job is represented by the following model class:
 
 | Attribute | Description | Type |
 | --------- | ----------- | ---- |
@@ -529,7 +527,7 @@ A Job is represented by the following model class:
 | `updatedAt` | Last update date (only Cortex updates a job when it finishes) | computed |
 | `updatedBy` | User who submitted the job and which identity is used by Cortex to update the job once it is finished | computed |
 
-A JobArtifact is represented by the following model class:
+A `JobArtifact` is represented by the following model class:
 
 | Attribute | Description | Type |
 | --------- | ----------- | ---- |
@@ -548,7 +546,7 @@ A JobArtifact is represented by the following model class:
 |`get_by_id(job_id)` | Returns a `Job` by its `id` | Job |
 |`get_report(job_id)` | Returns synchronously the `Job` object including its analysis report even if the job is still running | Job |
 |`get_report_async(job_id)` | Waits and returns the `Job` object including its analysis report | Job |
-|`get_artifacts(job_id)` | Returns a list of the obserables that have been extracted from the analysis report  | List[JobArtifact] |
+|`get_artifacts(job_id)` | Returns a list of the observables that have been extracted from the analysis report  | List[JobArtifact] |
 |`delete(org_id)` | Requires `superadmin` role, returns `true` if the delete completes successfully | Boolean |
 
 ### Examples
@@ -561,7 +559,7 @@ from cortex4py.query import *
 
 api = Api('http://CORTEX_APP_URL:9001', '**API_KEY**')
 
-# Fetch the latest 10 successful jobs that have been executed agains domains
+# Fetch the latest 10 successful jobs that have been executed agains domain names
 query = And(Eq('status', 'Success'), Eq('dataType', 'domain'))
 jobs = api.jobs.find_all(query, range='0-10', sort='-createdAt')
 
