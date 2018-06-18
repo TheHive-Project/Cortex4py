@@ -6,8 +6,17 @@ Cortex4py is a Python API client for [Cortex](https://thehive-project.org/), a p
 
 Cortex4py allows analysts to automate these operations and submit observables in bulk mode through the Cortex REST API from alternative SIRP platforms, custom scripts or MISP.
 
-# Caution - WIP
-Cortex4py is considered work in progress. It is considered *beta* software though we are using it on a regular basis for the use case outlined above. It should be sufficient in most situations where you need to interact with [Cortex's REST API](https://github.com/CERT-BDF/CortexDocs/blob/master/api/README.md). If not, please feel free to contribute and submit pull requests or [request missing features](https://github.com/CERT-BDF/Cortex4py/issues/new) if you are not comfortable with Python.
+
+# Features
+Cortex4py 2 is compatible with Cortex 2 and does not work with Cortex 1. It can:
+- Manage organizations
+- Manage users
+- Configure analyzers within an organization
+- List and launch analyzers
+
+For more details, please refer to the [full documentation](Usage.md).
+
+**Note**: Cortex4py 2 requires Python 3. It does not support Python 2.
 
 # Use It
 On macOS and Linux, type:
@@ -15,32 +24,10 @@ On macOS and Linux, type:
 sudo pip install cortex4py
 ```
 
-Following is an example of a python script that runs an analysis using MaxMind analyzer
+or, if you already have it, update it:
 
-```python
-import sys
-import json
-from cortex4py.api import CortexApi
-from cortex4py.api import CortexException
-
-api = CortexApi('http://127.0.0.1:9000')
-
-# Run analysis
-job_id = None
-try:
-    response = api.run_analyzer("MaxMind_GeoIP_3_0", "ip", 1, "8.8.8.8")
-    job_id = response["id"]
-except CortexException as ex:
-    print('[ERROR]: Failed to run analyzer: {}'.format(ex.message))
-    sys.exit(0)
-
-# Get the job report
-try:
-    response = api.get_job_report(job_id, '30s')
-    print(json.dumps(response, indent=4, sort_keys=True))
-except CortexException as ex:
-    print('[ERROR]: Failed to get job report'.format(ex.message))
-    sys.exit(0)
+```
+sudo pip install -U cortex4py
 ```
 
 If you are using Python on a Windows operating system, please forgo the `sudo` command.
