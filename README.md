@@ -21,13 +21,13 @@ For more details, please refer to the [full documentation](Usage.md).
 # Use It
 On macOS and Linux, type:
 ```
-sudo pip install cortex4py
+sudo -H pip3 install cortex4py
 ```
 
 or, if you already have it, update it:
 
 ```
-sudo pip install -U cortex4py
+sudo -H pip3 install -U cortex4py
 ```
 
 If you are using Python on a Windows operating system, please forgo the `sudo` command.
