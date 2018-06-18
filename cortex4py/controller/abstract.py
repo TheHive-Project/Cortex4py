@@ -55,8 +55,11 @@ class AbstractController(object):
 
         return self._api.do_get(url).json()
 
-    def update_one_by_id(self, obj_id, **attributes):
-        pass
+    @staticmethod
+    def _clean_changes(source, allowed, selected=[]):
+        if selected is not None and len(selected) > 0:
+            fields = list(set(allowed) & set(selected) & set(source.keys()))
+        else:
+            fields = list(set(allowed) & set(source.keys()))
 
-    def update_one_by_object(self, updated_obj, limit_attributes=None):
-        pass
+        return dict((k, source.get(k, None)) for k in fields)

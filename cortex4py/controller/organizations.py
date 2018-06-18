@@ -43,18 +43,11 @@ class OrganizationsController(AbstractController):
         return Organization(response)
 
     def update(self, org_id, data, fields=None) -> Organization:
-
         if isinstance(data, Organization):
             data = data.json()
 
-        changes = dict((k, data.get(k, None)) for k in ('description', 'status'))
-
-        if fields is not None:
-            patch = dict((k, changes.get(k, None)) for k in fields)
-        else:
-            patch = changes
-
         url = 'organization/{}'.format(org_id)
+        patch = AbstractController._clean_changes(data, ['description', 'status'], fields)
         return self._wrap(self._api.do_patch(url, patch).json(), Organization)
 
     def delete(self, org_id) -> bool:

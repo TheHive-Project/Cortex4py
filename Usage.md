@@ -176,6 +176,7 @@ The following example shows how to manipulate organizations as a `superadmin` us
 ```python
 from cortex4py.api import Api
 from cortex4py.query import *
+from cortex4py.models import Organization
 
 api = Api('http://CORTEX_APP_URL:9001', '**API_KEY**')
 
@@ -312,7 +313,7 @@ print(json.dumps(new_user.json(), indent=2))
 api.users.update(new_user.id, {
   'name': 'New User',
   'roles': ['read']
-}, ['name', 'roles'])
+})
 
 user_id = new_user.id
 

@@ -28,18 +28,9 @@ class UsersController(AbstractController):
 
         return User(response)
 
-    def update(self, org_id, data, fields=None) -> User:
-        if isinstance(data, User):
-            data = data.json()
-
-        changes = dict((k, data.get(k, None)) for k in ('name', 'organization', 'roles'))
-
-        if fields is not None:
-            patch = dict((k, changes.get(k, None)) for k in fields)
-        else:
-            patch = changes
-
-        url = 'user/{}'.format(org_id)
+    def update(self, user_id, data, fields=None) -> User:
+        url = 'user/{}'.format(user_id)
+        patch = AbstractController._clean_changes(data, ['name', 'organization', 'roles'], fields)
         return self._wrap(self._api.do_patch(url, patch).json(), User)
 
     def lock(self, user_id) -> User:
