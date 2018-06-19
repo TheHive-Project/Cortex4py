@@ -11,7 +11,7 @@ except ImportError:
 
 setup(
     name='cortex4py',
-    version='2.0.0',
+    version='2.0.1',
     description='Python API client for Cortex.',
     long_description=read_md('README.md'),
     author='TheHive-Project',
@@ -19,7 +19,7 @@ setup(
     maintainer='TheHive-Project',
     url='https://github.com/Thehive-Project/Cortex4py',
     license='AGPL-V3',
-    packages=['cortex4py'],
+    packages=['cortex4py', 'cortex4py.models', 'cortex4py.controllers'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
@@ -33,5 +33,5 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     include_package_data=True,
-    install_requires=['future', 'requests', 'python-magic']
+    install_requires=['typing', 'requests', 'python-magic']
 )

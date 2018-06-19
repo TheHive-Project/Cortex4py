@@ -6,10 +6,10 @@ import requests
 import warnings
 
 from .exceptions import *
-from .controller.organizations import OrganizationsController
-from .controller.users import UsersController
-from .controller.jobs import JobsController
-from .controller.analyzers import AnalyzersController
+from .controllers.organizations import OrganizationsController
+from .controllers.users import UsersController
+from .controllers.jobs import JobsController
+from .controllers.analyzers import AnalyzersController
 
 
 class Api(object):

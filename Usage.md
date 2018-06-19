@@ -40,7 +40,7 @@ Cortex4py 2 has the following structure:
 ```plain
 ├── cortex4py
 │   ├── api
-│   ├── controller
+│   ├── controllers
 │   │   ├── abstract
 │   │   ├── analyzers
 │   │   ├── jobs
@@ -59,7 +59,7 @@ Cortex4py 2 has the following structure:
 ```
 
 - The **model** classes represent the data objects and extend the `cortex4py.models.Model` that provides `json()` methods returning a JSON `dict` from every model object.
-- The **controller** classes wrap the available methods that call Cortex APIs.
+- The **controllers** classes wrap the available methods that call Cortex APIs.
 - The **api** class is the main class giving access to the different controllers.
 - **query.*** are utility methods that allow building search queries.
 - **exceptions.*** are supported exceptions
