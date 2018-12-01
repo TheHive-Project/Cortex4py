@@ -51,9 +51,6 @@ class CortexApi:
             self.headers = None
 
     def __handle_error(self, exception):
-        if isinstance(exception, CortexException):
-            raise exception
-
         if isinstance(exception, requests.exceptions.ConnectionError):
             raise_from(CortexException("Cortex service is unavailable"), exception)
         elif isinstance(exception, requests.exceptions.RequestException):
@@ -61,7 +58,7 @@ class CortexApi:
         elif isinstance(exception, InvalidInputException):
             raise_from(CortexException("Invalid input exception"), exception)
         else:
-            raise_from(CortexException("Unexpected exception"), exception)
+            raise exception
 
     def get_analyzers(self, data_type=None):
         """
