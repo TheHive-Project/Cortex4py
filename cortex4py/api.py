@@ -10,6 +10,7 @@ from .controllers.organizations import OrganizationsController
 from .controllers.users import UsersController
 from .controllers.jobs import JobsController
 from .controllers.analyzers import AnalyzersController
+from .controllers.responders import RespondersController
 
 
 class Api(object):
@@ -33,6 +34,7 @@ class Api(object):
         self.users = UsersController(self)
         self.jobs = JobsController(self)
         self.analyzers = AnalyzersController(self)
+        self.responders = RespondersController(self)
 
     @staticmethod
     def __recover(exception):
