@@ -548,7 +548,7 @@ A `JobArtifact` is represented by the following model class:
 |`get_report(job_id)` | Returns synchronously the `Job` object including its analysis report even if the job is still running | Job |
 |`get_report_async(job_id)` | Waits and returns the `Job` object including its analysis report | Job |
 |`get_artifacts(job_id)` | Returns a list of the observables that have been extracted from the analysis report  | List[JobArtifact] |
-|`delete(org_id)` | Requires `superadmin` role, returns `true` if the delete completes successfully | Boolean |
+|`delete(job_id)` | Requires `superadmin` role, returns `true` if the delete completes successfully | Boolean |
 
 ### Examples
 
