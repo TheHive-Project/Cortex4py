@@ -16,9 +16,7 @@ class Responder(Model):
             'dataTypeList': [],
             'configuration': {},
             'rate': None,
-            'rateUnit': None,
-            'maxPap': None,
-            'maxTlp': None
+            'rateUnit': None
         }
 
         if data is None:

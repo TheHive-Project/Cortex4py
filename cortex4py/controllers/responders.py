@@ -51,10 +51,6 @@ class RespondersController(AbstractController):
             'tlp': tlp
         }
 
-        params = {}
-        if 'force' in kwargs:
-            params['force'] = kwargs.get('force', 1)
-
         # add additional details
         for key in ['message', 'parameters']:
             if key in data:
@@ -62,9 +58,9 @@ class RespondersController(AbstractController):
 
         post['data'] = data.get('data')
 
-        return self._wrap(self._api.do_post('responder/{}/run'.format(worker_id), post, params).json(), Job)
+        return self._wrap(self._api.do_post('responder/{}/run'.format(worker_id), post).json(), Job)
 
-    def run_by_name(self, responder_name, observable, **kwargs) -> Job:
+    def run_by_name(self, responder_name, data, **kwargs) -> Job:
         responder = self.get_by_name(responder_name)
 
-        return self.run_by_id(responder.id, observable, **kwargs)
+        return self.run_by_id(responder.id, data, **kwargs)
