@@ -339,7 +339,7 @@ print(key2)
 # Compare keys
 print(key1 == key2)
 
-# Revoke the user's API keu
+# Revoke the user's API key
 api.users.revoke_key(user_id)
 
 # Lock the user
