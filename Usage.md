@@ -335,7 +335,7 @@ print(key2)
 # Compare keys
 print(key1 == key2)
 
-# Revoke the user's API keu
+# Revoke the user's API key
 api.users.revoke_key(user_id)
 
 # Lock the user
@@ -350,7 +350,7 @@ print(user.hasPassword == True)
 print(user.status == 'Locked')
 ```
 
-## Analyzer Pperations
+## Analyzer Operations
 
 The `AnalyzersController` class provides a set of methods to handle analyzers.
 
@@ -473,7 +473,7 @@ analyzer = api.analyzers.update(analyzer.id, {
 })
 
 # Run an analyzer against a domain
-job1 = api2.analyzers.run_by_name('Test_1_0', {
+job1 = api.analyzers.run_by_name('Test_1_0', {
     'data': 'google.com',
     'dataType': 'domain',
     'tlp': 1,
@@ -487,7 +487,7 @@ job1 = api2.analyzers.run_by_name('Test_1_0', {
 print(json.dumps(job1.json(), indent=2))
 
 # Run an analyzer against a file
-job2 = api2.analyzers.run_by_name('File_Info_2_0', {
+job2 = api.analyzers.run_by_name('File_Info_2_0', {
     'data': '/tmp/sample.txt',
     'dataType': 'file',
     'tlp': 1
