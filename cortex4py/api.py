@@ -10,7 +10,7 @@ from .controllers.organizations import OrganizationsController
 from .controllers.users import UsersController
 from .controllers.jobs import JobsController
 from .controllers.analyzers import AnalyzersController
-
+from .controllers.responders import RespondersController
 
 class Api(object):
     """This is the main class for communicating with the Cortex API. As this is a new major version, authentication is
