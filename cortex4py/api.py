@@ -33,6 +33,7 @@ class Api(object):
         self.users = UsersController(self)
         self.jobs = JobsController(self)
         self.analyzers = AnalyzersController(self)
+        self.responders = RespondersController(self)
 
     @staticmethod
     def __recover(exception):
