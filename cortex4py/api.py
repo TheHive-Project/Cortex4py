@@ -153,7 +153,7 @@ class Api(object):
             'api.get_analyzers() is considered deprecated. Use api.analyzers.get_by_[id|name|type]() instead.',
             DeprecationWarning
         )
-        if data_type is not None:
+        if data_type is None:
             return self.analyzers.find_all()
         else:
             return self.analyzers.get_by_type(data_type)
