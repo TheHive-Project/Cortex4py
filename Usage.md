@@ -230,7 +230,7 @@ org = api.organizations.get_by_id('demo')
 print(json.dumps(org.json(), indent=2))
 
 # Fetch the last 5 created and active users
-users = api.organizations.get_users(org.id, Eq('status', 'Active'), range='0-5', sort='-createdAt')
+users = api.organizations.get_users(org.id, Eq('status', 'Ok'), range='0-5', sort='-createdAt')
 
 # Display the usernames
 for user in users:
