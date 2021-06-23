@@ -6,10 +6,11 @@ class Job(Model):
     def __init__(self, data):
         defaults = {
             'id': None,
+            'type': None,
             'organization': None,
-            'analyzerId': None,
-            'analyzerDefinitionId': None,
-            'analyzerName': None,
+            'workerId': None,
+            'workerDefinitionId': None,
+            'workerName': None,
             'status': None,
             'dataType': None,
             'tlp': 1,

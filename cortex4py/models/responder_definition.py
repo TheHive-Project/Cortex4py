@@ -1,25 +1,20 @@
 from .model import Model
 
 
-class Analyzer(Model):
+class ResponderDefinition(Model):
 
     def __init__(self, data):
         defaults = {
             'id': None,
             'name': None,
-            'workerDefinitionId': None,
             'description': None,
             'version': None,
             'author': None,
             'url': None,
             'license': None,
+            'basicConfig': None,
             'dataTypeList': [],
-            'configuration': {},
-            'rate': None,
-            'rateUnit': None,
-            'jobCache': None,
-            'maxPap': None,
-            'maxTlp': None
+            'configurationItems': []
         }
 
         if data is None:

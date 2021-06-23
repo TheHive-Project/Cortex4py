@@ -7,6 +7,7 @@ from typing import List
 from cortex4py.query import *
 from .abstract import AbstractController
 from ..models import Analyzer, Job, AnalyzerDefinition
+from ..exceptions import CortexError
 
 
 class AnalyzersController(AbstractController):
@@ -48,11 +49,13 @@ class AnalyzersController(AbstractController):
 
     def run_by_id(self, analyzer_id, observable, **kwargs) -> Job:
         tlp = observable.get('tlp', 2)
+        pap = observable.get('pap', 2)
         data_type = observable.get('dataType', None)
 
         post = {
             'dataType': data_type,
-            'tlp': tlp
+            'tlp': tlp,
+            'pap': pap
         }
 
         params = {}
@@ -84,5 +87,8 @@ class AnalyzersController(AbstractController):
 
     def run_by_name(self, analyzer_name, observable, **kwargs) -> Job:
         analyzer = self.get_by_name(analyzer_name)
+
+        if analyzer is None:
+            raise CortexError("Analyzer %s not found" % analyzer_name)
 
         return self.run_by_id(analyzer.id, observable, **kwargs)

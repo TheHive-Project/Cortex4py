@@ -7,7 +7,6 @@ class AnalyzerDefinition(Model):
         defaults = {
             'id': None,
             'name': None,
-            'analyzerDefinitionId': None,
             'description': None,
             'version': None,
             'author': None,

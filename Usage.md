@@ -24,10 +24,14 @@ Cortex4py 2 requires Python 3. It does not work with Cortex 1.x.
   * [Model](#model-2)
   * [Methods](#methods-2)
   * [Examples](#examples-2)
-* [Job operations](#job-operations)
+* [Responder operations](#responder-operations)
   * [Model](#model-3)
   * [Methods](#methods-3)
   * [Examples](#examples-3)
+* [Job operations](#job-operations)
+  * [Model](#model-4)
+  * [Methods](#methods-4)
+  * [Examples](#examples-4)
 
 ## Introduction
 
@@ -226,7 +230,7 @@ org = api.organizations.get_by_id('demo')
 print(json.dumps(org.json(), indent=2))
 
 # Fetch the last 5 created and active users
-users = api.organizations.get_users(org.id, Eq('status', 'Active'), range='0-5', sort='-createdAt')
+users = api.organizations.get_users(org.id, Eq('status', 'Ok'), range='0-5', sort='-createdAt')
 
 # Display the usernames
 for user in users:
@@ -392,6 +396,7 @@ An analyzer is represented by the following model class:
 | `dataTypeList` | Allowed datatypes | readonly |
 | `baseConfig` | Base configuration name. This identifies the shared set of configuration with all the analyzer's flavors | readonly |
 | `jobCache` | Report cache timeout in minutes, visible for `orgAdmin` users only | writable |
+| `jobTimeout` | Job timeout in minutes, visible for `orgAdmin` users only | writable |
 | `rate` | Numeric amount of analyzer calls authorized for the specified `rateUnit`, visible for `orgAdmin` users only | writable |
 | `rateUnit` | Period of availability of the rate limite: `Day` or `Month`, visible for `orgAdmin` users only | writable |
 | `configuration` |  A JSON object where key/value pairs represent the config names, and their values. It includes the default properties `proxy_http`, `proxy_https`, `auto_extract_artifacts`, `check_tlp`, and `max_tlp`, visible for `orgAdmin` users only | writable |
@@ -445,16 +450,18 @@ analyzer = api.analyzers.enable('Test_1_0', {
     "proxy_https": "http://localhost:9999",
     "auto_extract_artifacts": False,
     "check_tlp": True,
-    "max_tlp": 2
+    "max_tlp": 2,
+    "max_pap": 2
   },
+  "jobCache": 10,
+  "jobTimeout": 30,
   "rate": 1000,
-  "rateUnit": "Day",
-  "jobCache": 5
+  "rateUnit": "Day"
 })
 
 # Print the details of the enaled analyzer
 print(json.dumps(analyzer.json(), indent=2))
-print(analyzer.analyzerDefinitionId == 'Test_1_0')
+print(analyzer.workerDefinitionId == 'Test_1_0')
 
 # Update the configuration
 analyzer_id = analyzer.id
@@ -468,7 +475,8 @@ analyzer = api.analyzers.update(analyzer.id, {
     "proxy_https": null,
     "auto_extract_artifacts": True,
     "check_tlp": false,
-    "max_tlp": null
+    "max_tlp": null,
+    "max_pap": 2
   }
 })
 
@@ -498,9 +506,135 @@ print(json.dumps(job2.json(), indent=2))
 api.analyzers.disable(analyzer_id)
 ```
 
+## Responder Operations
+
+The `RespondersController` class provides a set of methods to handle responders.
+
+### Model
+
+A responder is an instance of a responder definition, and both models share the same fields.
+
+A responder definition is represented by the following model class:
+
+| Field | Description | Type |
+| --------- | ----------- | ---- |
+| `id` | Responder ID once enabled within an organization | readonly |
+| `workerDefinitionId`| Responder definition name | readonly |
+| `name` | Name of the responder | readonly |
+| `version` | Version of the responder | readonly |
+| `description` | Description of the responder | readonly |
+| `author` | Author of the responder | readonly |
+| `url` | URL where the responder has been published | readonly |
+| `license` | License of the responder | readonly |
+| `dataTypeList` | Allowed datatypes | readonly |
+| `configurationItems` | A list that describes the configuration options of the responder | readonly |
+| `baseConfig` | Base configuration name. This identifies the shared set of configuration with all the responder's flavors | readonly |
+| `createdBy` | User who enabled the responder | computed |
+| `updatedAt` | Last update date | computed |
+| `updatedBy` | User who last updated the responder | computed |
+
+A responder is represented by the following model class:
+
+| Field | Description | Type |
+| --------- | ----------- | ---- |
+| `id` | Responder ID once enabled within an organization | readonly |
+| `workerDefinitionId`| Responder definition name | readonly |
+| `name` | Name of the responder | readonly |
+| `version` | Version of the responder | readonly |
+| `description` | Description of the responder | readonly |
+| `author` | Author of the responder | readonly |
+| `url` | URL where the responder has been published | readonly |
+| `license` | License of the responder | readonly |
+| `dataTypeList` | Allowed datatypes | readonly |
+| `baseConfig` | Base configuration name. This identifies the shared set of configuration with all the responder's flavors | readonly |
+| `jobCache` | Report cache timeout in minutes, visible for `orgAdmin` users only | writable |
+| `rate` | Numeric amount of responder calls authorized for the specified `rateUnit`, visible for `orgAdmin` users only | writable |
+| `rateUnit` | Period of availability of the rate limite: `Day` or `Month`, visible for `orgAdmin` users only | writable |
+| `configuration` |  A JSON object where key/value pairs represent the config names, and their values. It includes the default properties `proxy_http`, `proxy_https`, `auto_extract_artifacts`, `check_tlp`, and `max_tlp`, visible for `orgAdmin` users only | writable |
+| `createdBy` | User who enabled the analyzer | computed |
+| `updatedAt` | Last update date | computed |
+| `updatedBy` | User who last updated the analyzer | computed |
+
+### Methods
+
+| Method | Description | Return type |
+| --------- | ----------- | ---- |
+|`find_all(query,**kwargs)` | Returns a list of `Responder` objects, based on `query`, `range` and `sort` parameters | List[Responder] |
+|`find_one_by(query,**kwargs)` | Returns the first `Responder` object, based on `query` and `sort` parameters | Responder |
+|`get_by_id(worker_id)` | Returns a `Responder` by its `id` | Responder |
+|`get_by_name(name)` | Returns a `Responder` by its `name` | Responder |
+|`get_by_type(data_type)` | Returns a list of available `Responder` applicable to the given `data_type` | List[Responder] |
+|`enable(responder_name,config)` | Activate an responder and returns its `Responder` object | Responder |
+|`update(worker_id)` | Update the configuration of an `Responder` and returns the updated version | Responder |
+|`disable(worker_id)` | Removes a responder from an organization and returns `true` if it completes successfully | Boolean |
+|`run_by_id(worker_id, data,**kwargs)` | Returns a `Job` by its `name` | Job |
+|`run_by_name(responder_name, data,**kwargs)` | Runs a responder by its name and returns the resulting `Job` | Job |
+|`definitions()` | Returns the list of all the responder definitions including the enabled and disabled responders | List[ResponderDefinition] |
+
+### Examples
+
+The following example shows how to manipulate responders:
+
+```python
+import json
+
+from cortex4py.api import Api
+from cortex4py.query import *
+
+api = Api('http://CORTEX_APP_URL:9001', '**API_KEY**')
+
+# Get enabled responders
+responders = api.responders.find_all({}, range='all')
+
+# Display enabled responders' names
+for responder in responders:
+  print('Responder {} is enabled'.format(responder.name))
+
+# Get enabled responders that available for TheHive cases
+case_responders = api.responders.get_by_type('thehive:case')
+
+# Display responders details
+for responder in case_responders:  
+  print(json.dumps(responder.json(), indent=2))
+
+# Enable the responder called Test_1_0
+responder = api.responders.enable('Test_1_0', {
+  "configuration": {
+    "api_key": "XXXXXXXXXXXXXx",
+    "proxy_http": "http://localhost:9999",
+    "proxy_https": "http://localhost:9999",    
+    "check_tlp": True,
+    "max_tlp": 2,
+    "max_pap": 2
+  },  
+  "jobTimeout": 30,
+  "rate": 1000,
+  "rateUnit": "Day"
+})
+
+# Print the details of the enaled responder
+print(json.dumps(responder.json(), indent=2))
+print(responder.workerDefinitionId == 'Test_1_0')
+
+# Run a responder
+job = api.responders.run_by_name('File_Info_2_0', {
+    'data': {
+      'title': 'Sample case',
+      'description': 'This is a sample case',
+      ...
+    },
+    'dataType': 'thehive:case',
+    'tlp': 1
+})
+print(json.dumps(job.json(), indent=2))
+
+# Disable a responder
+api.responders.disable(responder.id)
+```
+
 ## Job Operations
 
-The `JobsController` class provides a set of methods to handle jobs. A job is the execution of a specific analyzer.
+The `JobsController` class provides a set of methods to handle jobs. A job is the execution of a specific worker (analyzer or responder).
 
 ### Model
 
@@ -509,18 +643,19 @@ A job is represented by the following model class:
 | Attribute | Description | Type |
 | --------- | ----------- | ---- |
 | `id` | Job ID | computed |
-| `analyzerDefinitionId`| Analyzer definition name | readonly |
-| `analyzerId` | Instance ID of the analyzer to which the job is associated  | readonly |
+| `type` | Job type: `responder` or `analyzer` | computed |
+| `workerDefinitionId`| Worker definition name | readonly |
+| `workerId` | Instance ID of the worker to which the job is associated  | readonly |
+| `workerName` | Name of the worker to which the job is associated | readonly |
 | `organization` | Organization to which the user belongs (set upon account creation) | readonly |
-| `analyzerName` | Name of the analyzer to which the job is associated | readonly |
-| `dataType` | the datatype of the analyzed observable | readonly |
+| `dataType` | the datatype of the worker's input data | readonly |
 | `status` | Status of the job (`Waiting`, `InProgress`, `Success`, `Failure`, `Deleted`) | computed |
-| `data` | Value of the analyzed observable (does not apply to `file` observables) | readonly |
+| `data` | Value of the worker's input (does not apply to `file` observables). Contains all the data of a `Case` if the job is a result of a case responder.  | readonly |
 | `attachment` | JSON object representing `file` observables (does not apply to non-`file` observables). It  defines the`name`, `hashes`, `size`, `contentType` and `id` of the `file` observable | readonly |
 | `parameters` | JSON object of key/value pairs set during job creation | readonly |
 | `message` | A free text field to set additional text/context for a job | readonly |
 | `tlp` | The TLP of the analyzed observable | readonly |
-| `report` | The analysy report as a JSON object including `success`, `full`, `summary` and `artifacts` peoperties.<br>In case of failure, the resport contains a `errorMessage` property | readonly |
+| `report` | The analysis report as a JSON object including `success`, `full`, `summary` and `artifacts` peoperties.<br>In case of failure, the resport contains a `errorMessage` property | readonly |
 | `startDate` | Start date | computed |
 | `endDate` | End date | computed |
 | `createdAt` | Creation date. Please note that a job can be requested but not immediately honored. The actual time at which it is started is the value of `startDate` | computed |

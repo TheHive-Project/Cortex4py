@@ -1,7 +1,7 @@
 from .model import Model
 
 
-class Analyzer(Model):
+class Responder(Model):
 
     def __init__(self, data):
         defaults = {
@@ -16,10 +16,7 @@ class Analyzer(Model):
             'dataTypeList': [],
             'configuration': {},
             'rate': None,
-            'rateUnit': None,
-            'jobCache': None,
-            'maxPap': None,
-            'maxTlp': None
+            'rateUnit': None
         }
 
         if data is None:

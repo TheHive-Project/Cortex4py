@@ -4,3 +4,4 @@ from .organizations import OrganizationsController
 from .users import UsersController
 from .jobs import JobsController
 from .analyzers import AnalyzersController
+from .responders import RespondersController
