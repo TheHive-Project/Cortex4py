@@ -1,5 +1,19 @@
-[![Join the chat at https://gitter.im/TheHive-Project/TheHive](https://badges.gitter.im/TheHive-Project/TheHive.svg)](https://gitter.im/TheHive-Project/TheHive?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
+<div>
+  <p align="center">
+    <a href="https://travis-ci.org/github/TheHive-Project/Cortex4py" target="_blank">
+      <img src="https://travis-ci.org/TheHive-Project/Cortex4py.svg?branch=1.x" alt="Build status">
+    </a>
+    <a href="https://chat.thehive-project.org" target"_blank">
+      <img src="https://img.shields.io/discord/779945042039144498" alt="Discord">
+    </a>
+    <a href="./LICENSE" target"_blank">
+      <img src="https://img.shields.io/github/license/TheHive-Project/Cortex4py" alt="License">
+    </a>
+    <a href="https://pypi.org/project/cortex4py" target"_blank">
+      <img src="https://img.shields.io/pypi/dm/cortex4py" alt="Pypi page">
+    </a>
+  </p>
+</div>
 
 # Cortex4py
 Cortex4py is a Python API client for [Cortex](https://thehive-project.org/), a powerful observable analysis engine where observables such as IP and email addresses, URLs, domain names, files or hashes can be analyzed one by one using a Web interface.
@@ -44,7 +58,7 @@ We welcome your contributions. Please feel free to fork the code, play with it, 
 We do have a [Code of conduct](code_of_conduct.md). Make sure to check it out before contributing.
 
 # Support
-Please [open an issue on GitHub](https://github.com/CERT-BDF/Cortex4py/issues/new) if you'd like to report a bug or request a feature. We are also available on [Gitter](https://gitter.im/TheHive-Project/TheHive) to help you out.
+Please [open an issue on GitHub](https://github.com/TheHive-Project/Cortex4py/issues/new) if you'd like to report a bug or request a feature. We are also available on [Discord](https://chat.thehive-project.org) to help you out.
 
 If you need to contact the project team, send an email to <support@thehive-project.org>.
 
