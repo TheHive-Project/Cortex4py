@@ -154,7 +154,7 @@ class Api(object):
             DeprecationWarning
         )
         if data_type is None:
-            return self.analyzers.find_all()
+            return self.analyzers.find_all({})
         else:
             return self.analyzers.get_by_type(data_type)
 
