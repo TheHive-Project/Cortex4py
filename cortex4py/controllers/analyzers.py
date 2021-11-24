@@ -68,11 +68,19 @@ class AnalyzersController(AbstractController):
                 post[key] = observable.get(key, None)
 
         if observable.get('dataType') == "file":
-            file_path = observable.get('data', None)
-            file_def = {
-                "data": (os.path.basename(file_path), open(file_path, 'rb'),
-                         magic.Magic(mime=True).from_file(file_path))
-            }
+            data = observable.get('data', None)
+            if observable.get('dataProvided') == True:
+                file_name = observable.get('parameters', {}).get('filename')
+                file_def = {
+                    "data": (os.path.basename(file_name), data,
+                            magic.Magic(mime=True).from_buffer(data))
+                }
+            else:
+                file_path = data
+                file_def = {
+                    "data": (os.path.basename(file_path), open(file_path, 'rb'),
+                            magic.Magic(mime=True).from_file(file_path))
+                }
 
             data = {
                 '_json': json.dumps(post)
