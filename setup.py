@@ -9,6 +9,12 @@ except ImportError:
     print("warning: pypandoc module not found, could not convert Markdown to RST")
     read_md = lambda f: open(f, 'r').read()
 
+install_requires = [
+    'typing;python_version<"3.5"',
+    'requests',
+    'python-magic'
+]
+
 setup(
     name='cortex4py',
     version='2.1.0',
@@ -33,5 +39,5 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     include_package_data=True,
-    install_requires=['typing', 'requests', 'python-magic']
+    install_requires=install_requires
 )
