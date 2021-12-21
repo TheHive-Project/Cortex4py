@@ -29,6 +29,7 @@ class Api(object):
         self.__base_url = '{}/api/'.format(url)
         self.__proxies = kwargs.get('proxies', {})
         self.__verify_cert = kwargs.get('verify_cert', kwargs.get('cert', True))
+        self.__session = kwargs.get('session', None)
 
         self.organizations = OrganizationsController(self)
         self.users = UsersController(self)
@@ -55,13 +56,22 @@ class Api(object):
         else:
             raise CortexError("Unexpected exception") from exception
 
+    @property
+    def session(self):
+        # if no custom session object has been provided by the user
+        if self.__session is None:
+            # start a fresh session without cookies for each request
+            return requests.sessions.Session()
+
+        return self.__session
+
     def do_get(self, endpoint, params={}):
         headers = {
             'Authorization': 'Bearer {}'.format(self.__api_key)
         }
 
         try:
-            response = requests.get('{}{}'.format(self.__base_url, endpoint),
+            response = self.session.get('{}{}'.format(self.__base_url, endpoint),
                                     headers=headers,
                                     params=params,
                                     proxies=self.__proxies,
@@ -78,7 +88,7 @@ class Api(object):
         }
 
         try:
-            response = requests.post('{}{}'.format(self.__base_url, endpoint),
+            response = self.session.post('{}{}'.format(self.__base_url, endpoint),
                                      headers=headers,
                                      proxies=self.__proxies,
                                      data=data,
@@ -96,7 +106,7 @@ class Api(object):
         }
 
         try:
-            response = requests.post('{}{}'.format(self.__base_url, endpoint),
+            response = self.session.post('{}{}'.format(self.__base_url, endpoint),
                                      headers=headers,
                                      proxies=self.__proxies,
                                      json=data,
@@ -115,7 +125,7 @@ class Api(object):
         }
 
         try:
-            response = requests.patch('{}{}'.format(self.__base_url, endpoint),
+            response = self.session.patch('{}{}'.format(self.__base_url, endpoint),
                                       headers=headers,
                                       proxies=self.__proxies,
                                       json=data,
@@ -132,7 +142,7 @@ class Api(object):
         }
 
         try:
-            response = requests.delete('{}{}'.format(self.__base_url, endpoint),
+            response = self.session.delete('{}{}'.format(self.__base_url, endpoint),
                                        headers=headers,
                                        proxies=self.__proxies,
                                        verify=self.__verify_cert)
